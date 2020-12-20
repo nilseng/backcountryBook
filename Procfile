@@ -1,1 +1,1 @@
-web cd server && npx ts-node src/index.ts
+web cd server && node dist/index.js

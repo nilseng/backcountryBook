@@ -46,8 +46,8 @@ const TripCard = ({ trip }: IProps) => {
       <div className="card-image-container">
         {images && images.length > 0 ? (
           <Carousel className="h-100">
-            {images.map((image) => (
-              <Carousel.Item key={image.name}>
+            {images.map((image, i) => (
+              <Carousel.Item key={i}>
                 <Image
                   className="card-image rounded-0 pb-2"
                   src={image}

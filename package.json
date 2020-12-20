@@ -4,12 +4,8 @@
   "description": "Web app for sharing back country skiing experiences",
   "main": "server/src/index.ts",
   "scripts": {
-    "heroku-prebuild": "npm i && cd client && npm i && npm run build",
-    "heroku-postbuild": "cd server && npm i"
+    "heroku-prebuild": "npm i && cd client && npm i && npm run build && cd .. && cd server && tsc"
   },
   "author": "Teodor Nilseng Danielsen",
-  "license": "ISC",
-  "dependencies": {
-    "typescript": "^4.1.3"
-  }
+  "license": "ISC"
 }
