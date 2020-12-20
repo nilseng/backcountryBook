@@ -11,7 +11,11 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { useAuth0 } from "@auth0/auth0-react";
 
-const NavBar = () => {
+interface IProps {
+  setShowModal: any;
+}
+
+const NavBar = ({ setShowModal }: IProps) => {
   const { isLoading, isAuthenticated, loginWithRedirect, logout } = useAuth0();
 
   return (
@@ -32,7 +36,7 @@ const NavBar = () => {
               {isAuthenticated && (
                 <Nav.Link
                   className="btn btn-sm btn-outline-primary text-light mr-2"
-                  onClick={() => console.log("ny tur")}
+                  onClick={() => setShowModal(true)}
                 >
                   <FaIcon icon={faPlus} className="mr-2"></FaIcon>Add trip
                 </Nav.Link>

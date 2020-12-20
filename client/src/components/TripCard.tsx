@@ -12,14 +12,7 @@ interface IProps {
 }
 
 const TripCard = ({ trip }: IProps) => {
-  const [date] = useState(
-    new Date(+trip?.createdAt).toLocaleString(undefined, {
-      year: "numeric",
-      month: "numeric",
-      day: "numeric",
-    })
-  );
-
+  const [date] = useState();
   const [images, setImages] = useState<any[]>([]);
 
   useEffect(() => {
@@ -33,6 +26,16 @@ const TripCard = ({ trip }: IProps) => {
       }
     }
   }, [trip.imageIds]);
+
+  useEffect(() => {
+    if (trip?.createdAt) {
+      new Date(+trip.createdAt).toLocaleString(undefined, {
+        year: "numeric",
+        month: "numeric",
+        day: "numeric",
+      });
+    }
+  }, [trip]);
 
   return (
     <Card className="card my-1" bg="dark">

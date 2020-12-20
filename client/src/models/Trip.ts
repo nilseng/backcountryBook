@@ -5,9 +5,9 @@ export interface ITrip {
     name: string
     description?: string
     summitIds?: string[]
-    imageIds?: string[]
-    createdAt: number
-    updatedAt: number
+    imageIds: string[]
+    createdAt?: number
+    updatedAt?: number
     sub: string
-    user: IUser
+    user?: IUser
 }
