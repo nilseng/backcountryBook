@@ -9,8 +9,11 @@ import {
   faKey,
   faPlus,
 } from "@fortawesome/free-solid-svg-icons";
+import { useAuth0 } from "@auth0/auth0-react";
 
 const NavBar = () => {
+  const { isLoading, isAuthenticated, loginWithRedirect, logout } = useAuth0();
+
   return (
     <Navbar bg="dark" variant="dark" expand="md" collapseOnSelect>
       <Navbar.Brand href="/">
@@ -24,28 +27,61 @@ const NavBar = () => {
       />
       <Navbar.Collapse id="basic-navbar-nav" className="justify-content-end">
         <Nav>
-          <Nav.Link
-            className="btn btn-outline-primary mr-2"
-            onClick={() => console.log("ny tur")}
-          >
-            <FaIcon icon={faPlus} className="mr-2"></FaIcon>Add trip
-          </Nav.Link>
-          <Nav.Link href="/summits">
-            <FaIcon icon={faMountain} className="mr-2"></FaIcon>
-            Peaks
-          </Nav.Link>
-          <Nav.Link href="/profile">
-            <FaIcon icon={faSkiingNordic} className="mr-2"></FaIcon>
-            Profile
-          </Nav.Link>
-          <Nav.Link onClick={() => console.log("log in")}>
-            <FaIcon icon={faKey} className="mr-2"></FaIcon>
-            Log in
-          </Nav.Link>
-          <Nav.Link onClick={() => console.log("log out")}>
-            <FaIcon icon={faBan} className="mr-2"></FaIcon>
-            Log out
-          </Nav.Link>
+          {!isLoading && (
+            <>
+              {isAuthenticated && (
+                <Nav.Link
+                  className="btn btn-sm btn-outline-primary text-light mr-2"
+                  onClick={() => console.log("ny tur")}
+                >
+                  <FaIcon icon={faPlus} className="mr-2"></FaIcon>Add trip
+                </Nav.Link>
+              )}
+              <Nav.Link href="/summits" className="btn btn-sm text-light">
+                <FaIcon icon={faMountain} className="mr-2"></FaIcon>
+                Peaks
+              </Nav.Link>
+              {isAuthenticated && (
+                <>
+                  <Nav.Link href="/profile" className="btn btn-sm text-light">
+                    <FaIcon icon={faSkiingNordic} className="mr-2"></FaIcon>
+                    Profile
+                  </Nav.Link>
+                  <Nav.Link
+                    className="btn btn-sm text-muted mr-2"
+                    onClick={() => logout()}
+                  >
+                    <FaIcon
+                      icon={faBan}
+                      style={{ marginRight: "0.4rem" }}
+                    ></FaIcon>
+                    Log out
+                  </Nav.Link>
+                </>
+              )}
+              {!isAuthenticated && (
+                <>
+                  <Nav.Link
+                    className="btn btn-sm text-light mr-2"
+                    onClick={() => loginWithRedirect()}
+                  >
+                    <FaIcon
+                      icon={faSkiingNordic}
+                      style={{ marginRight: "0.4rem" }}
+                    ></FaIcon>
+                    Log in
+                  </Nav.Link>
+                  <Nav.Link
+                    className="btn btn-sm btn-outline-primary text-light mr-2"
+                    onClick={() => loginWithRedirect({ screen_hint: "signup" })}
+                  >
+                    <FaIcon icon={faKey} className="mr-2"></FaIcon>
+                    Sign up
+                  </Nav.Link>
+                </>
+              )}
+            </>
+          )}
         </Nav>
       </Navbar.Collapse>
     </Navbar>
