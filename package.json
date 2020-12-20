@@ -10,7 +10,6 @@
   "author": "Teodor Nilseng Danielsen",
   "license": "ISC",
   "dependencies": {
-    "serve": "^11.3.2",
     "typescript": "^4.1.3"
   }
 }
