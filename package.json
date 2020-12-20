@@ -1,0 +1,16 @@
+{
+  "name": "back-country-book",
+  "version": "1.0.0",
+  "description": "Web app for sharing back country skiing experiences",
+  "main": "server/src/index.ts",
+  "scripts": {
+    "heroku-prebuild": "npm i && cd client && npm i && npm run build",
+    "heroku-postbuild": "cd server && npm i"
+  },
+  "author": "Teodor Nilseng Danielsen",
+  "license": "ISC",
+  "dependencies": {
+    "serve": "^11.3.2",
+    "typescript": "^4.1.3"
+  }
+}

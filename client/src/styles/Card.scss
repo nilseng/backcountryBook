@@ -1,0 +1,30 @@
+.card {
+  width: 27rem;
+  max-width: 100%;
+  color: #f8f9fa;
+}
+
+.card-image {
+  max-width: 100%;
+  margin-top: 10rem;
+  transform: translateY(-50%);
+}
+
+.card-image-container {
+  height: 20rem;
+  overflow: hidden;
+}
+
+@media (min-width: 768px) {
+  .card {
+    width: 50rem;
+  }
+
+  .card-image {
+    margin-top: 20rem;
+  }
+
+  .card-image-container {
+    height: 40rem;
+  }
+}

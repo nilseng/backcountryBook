@@ -1,0 +1,15 @@
+.preview-image {
+  max-width: 100%;
+  // Setting margin-top to half of image-container height to center the top of the image
+  margin-top: 10rem;
+  transform: translateY(-50%);
+  overflow: hidden;
+}
+
+.image-container {
+  height: 20rem;
+
+  .carousel-inner {
+    max-height: 100%;
+  }
+}
