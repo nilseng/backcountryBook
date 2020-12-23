@@ -1,5 +1,8 @@
 import express from "express"
 import aws from "aws-sdk"
+import multer from "multer"
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 const router = express.Router()
 
@@ -14,10 +17,40 @@ router.get("/image/:key", (req, res) => {
         Bucket: req.params.bucket ? req.params.bucket : defaultBucket,
         Key: req.params.key,
     };
-    s3.getObject(params, (err, data) => {
+    s3.getObject(params, (err: any, data: any) => {
         if (err) res.status(400).json(err);
         else res.status(200).send(data.Body);
     });
+});
+
+router.post("/image", upload.array("images"), async (req, res) => {
+    const token = req.headers.authorization || "";
+    /* const { user, error } = await isTokenValid(token);
+    if (!user) return res.status(401).json({ Error: "User not authenticated" }); */
+    if (!req.body || !req.body.imageIds)
+        return res.status(200).json({ Error: "No images in request" });
+    if (!req.files || req.files.length === 0)
+        return res.status(400).json({ Error: "No files in request" });
+    const uploadParams: any = {
+        Bucket: req.body.bucket ? req.body.bucket : defaultBucket,
+    };
+    if (Array.isArray(req.files)) {
+        for (const [i, file] of req.files.entries()) {
+            uploadParams.Body = file.buffer;
+            if (Array.isArray(req.body.imageIds)) {
+                uploadParams.Key = req.body.imageIds[i];
+            } else {
+                uploadParams.Key = req.body.imageIds;
+            }
+            s3.upload(uploadParams, (err: any, data: any) => {
+                if (err) {
+                    return res.status(400).json({ Error: err })
+                }
+                if (i === (req.files.length as number) - 1)
+                    res.status(200).json("File(s) sucessfully uploaded");
+            });
+        }
+    }
 });
 
 export default router

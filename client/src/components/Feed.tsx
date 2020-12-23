@@ -1,17 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Container from "react-bootstrap/Container";
+import { ITrip } from "../models/Trip";
 import TripCard from "./TripCard";
 
-const Feed = () => {
-  const [trips, setTrips] = useState<[]>([]);
+interface IProps {
+  trips: ITrip[];
+}
 
-  useEffect(() => {
-    fetch("/api/trips").then(async (res) => {
-      const trips = await res.json();
-      setTrips(trips);
-    });
-  }, []);
-
+const Feed = ({ trips }: IProps) => {
   return (
     <Container className="text-light py-4">
       {trips &&
