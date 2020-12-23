@@ -1,8 +1,9 @@
 import express from "express"
-import { ObjectID } from "mongodb"
+import { ObjectId, ObjectID } from "mongodb"
 import { checkJwt } from "../auth/auth"
 
 import { collections as db } from "../database/databaseSetup"
+import { deleteImage } from "../services/imageService"
 import { updateUser } from "../services/userService"
 import { resolveUser } from "./users"
 
@@ -30,6 +31,18 @@ router.post("/trip", checkJwt, async (req: any, res) => {
     } catch (e) {
         res.status(400).json({ error: e })
     }
+})
+
+router.delete("/trip", checkJwt, async (req: any, res) => {
+    if (!req.body?._id) return res.status(400).json({ Error: 'No trip _id received by server.' })
+    if (!req.user.sub === req.body.sub) return res.status(401).json({ Error: 'Unauthorized' })
+    if (req.body.imageIds) {
+        for (const id of req.body.imageIds) {
+            deleteImage(id)
+        }
+    }
+    const doc = await db.trips.deleteOne({ _id: new ObjectId(req.body._id) })
+    res.status(200).json(doc)
 })
 
 export default router

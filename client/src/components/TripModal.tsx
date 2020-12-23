@@ -13,7 +13,7 @@ import ImagePlaceholder from "./ImagePlaceholder";
 import { ITrip } from "../models/Trip";
 
 import "../styles/TripModal.scss";
-import { saveTrip } from "../services/tripService";
+import { deleteTrip, saveTrip } from "../services/tripService";
 import Loading from "./Loading";
 
 interface IProps {
@@ -65,7 +65,15 @@ const TripModal = ({
   };
 
   const onDiscard = async () => {
-    if (trip?._id) console.log("delete trip");
+    const token = await getIdTokenClaims();
+    if (trip?._id) {
+      try {
+        await deleteTrip(token, trip);
+        setTrips((trips: ITrip[]) => trips.filter((t) => t._id !== trip._id));
+      } catch (e) {
+        console.log(`Something went wrong: ${e}`);
+      }
+    }
     handleClose();
   };
 
@@ -168,7 +176,7 @@ const TripModal = ({
           </Modal.Body>
           <Modal.Footer className="bg-dark text-light border-0">
             <Button variant="secondary" onClick={() => onDiscard()}>
-              Discard
+              Delete
               <FaIcon icon={faTrash} className="ml-1" />
             </Button>
             <Button onClick={() => onSave()}>

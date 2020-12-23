@@ -13,3 +13,15 @@ export const saveTrip = async (token: IdToken, trip: ITrip): Promise<ITrip> => {
     })
     return res.json()
 }
+
+export const deleteTrip = async (token: IdToken, trip: ITrip) => {
+    const res = await fetch(`/api/trip`, {
+        method: "DELETE",
+        headers: {
+            Authorization: `Bearer ${token.__raw}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(trip)
+    })
+    return res.json()
+}
