@@ -47,7 +47,10 @@ const TripModal = ({
       try {
         const imageIds = await saveImages(token);
         const savedTrip = imageIds
-          ? await saveTrip(token, { ...trip, imageIds })
+          ? await saveTrip(token, {
+              ...trip,
+              imageIds: [...trip.imageIds, ...imageIds],
+            })
           : await saveTrip(token, trip);
         setTrips((trips: ITrip[]) => [
           { ...savedTrip, user },

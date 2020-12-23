@@ -32,7 +32,17 @@ const App = () => {
         <NavBar setShowModal={setShowModal} />
         <Switch>
           {trips && (
-            <Route path="/" exact render={(props) => <Feed trips={trips} />} />
+            <Route
+              path="/"
+              exact
+              render={(props) => (
+                <Feed
+                  trips={trips}
+                  setTrip={setTrip}
+                  setShowModal={setShowModal}
+                />
+              )}
+            />
           )}
           <PrivateRoute path="/profile" component={Profile} />
         </Switch>

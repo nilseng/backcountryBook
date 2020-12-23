@@ -5,13 +5,22 @@ import TripCard from "./TripCard";
 
 interface IProps {
   trips: ITrip[];
+  setTrip: any;
+  setShowModal: any;
 }
 
-const Feed = ({ trips }: IProps) => {
+const Feed = ({ trips, setTrip, setShowModal }: IProps) => {
   return (
     <Container className="text-light py-4">
       {trips &&
-        trips.map((trip: any) => <TripCard key={trip._id} trip={trip} />)}
+        trips.map((trip: any) => (
+          <TripCard
+            key={trip._id}
+            trip={trip}
+            setTripToEdit={setTrip}
+            setShowModal={setShowModal}
+          />
+        ))}
     </Container>
   );
 };
