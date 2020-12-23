@@ -6,7 +6,7 @@ export const saveTrip = async (token: IdToken, trip: ITrip): Promise<ITrip> => {
     const res = await fetch("/api/trip", {
         method: "POST",
         headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token.__raw}`,
             'Content-Type': 'application/json'
         },
         body: JSON.stringify(trip)

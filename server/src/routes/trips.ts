@@ -1,7 +1,9 @@
 import express from "express"
 import { ObjectID } from "mongodb"
+import { checkJwt } from "../auth/auth"
 
 import { collections as db } from "../database/databaseSetup"
+import { updateUser } from "../services/userService"
 import { resolveUser } from "./users"
 
 const router = express.Router()
@@ -14,10 +16,10 @@ router.get("/trips", async (req: any, res) => {
     res.status(200).json(trips)
 })
 
-router.post("/trip", async (req: any, res) => {
-    // Check auth
-    // Handle error
+router.post("/trip", checkJwt, async (req: any, res) => {
     const trip = req.body
+    updateUser(req.user)
+    trip.sub = req.user.sub
     const date = Date.now()
     if (!trip.createdAt) trip.createdAt = date
     trip.updatedAt = date

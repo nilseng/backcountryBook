@@ -1,6 +1,7 @@
 import express from "express"
 import aws from "aws-sdk"
 import multer from "multer"
+import { checkJwt } from "../auth/auth";
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
@@ -23,10 +24,7 @@ router.get("/image/:key", (req, res) => {
     });
 });
 
-router.post("/image", upload.array("images"), async (req, res) => {
-    const token = req.headers.authorization || "";
-    /* const { user, error } = await isTokenValid(token);
-    if (!user) return res.status(401).json({ Error: "User not authenticated" }); */
+router.post("/image", checkJwt, upload.array("images"), async (req, res) => {
     if (!req.body || !req.body.imageIds)
         return res.status(200).json({ Error: "No images in request" });
     if (!req.files || req.files.length === 0)

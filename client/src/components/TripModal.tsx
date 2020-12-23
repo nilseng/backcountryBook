@@ -34,7 +34,7 @@ const TripModal = ({
   setShowModal,
   setTrips,
 }: IProps) => {
-  const { isLoading, getIdTokenClaims } = useAuth0();
+  const { isLoading, user, getIdTokenClaims } = useAuth0();
 
   const [files, setFiles] = useState<any[]>();
 
@@ -44,14 +44,18 @@ const TripModal = ({
     setIsSaving(true);
     if (trip) {
       const token = await getIdTokenClaims();
-      const imageIds = await saveImages(token);
-      const savedTrip = imageIds
-        ? await saveTrip(token, { ...trip, imageIds })
-        : await saveTrip(token, trip);
-      setTrips((trips: ITrip[]) => [
-        savedTrip,
-        ...trips.filter((t) => t._id !== savedTrip._id),
-      ]);
+      try {
+        const imageIds = await saveImages(token);
+        const savedTrip = imageIds
+          ? await saveTrip(token, { ...trip, imageIds })
+          : await saveTrip(token, trip);
+        setTrips((trips: ITrip[]) => [
+          { ...savedTrip, user },
+          ...trips.filter((t) => t._id !== savedTrip._id),
+        ]);
+      } catch (e) {
+        console.log(`Something went wrong: ${e}`);
+      }
     }
     setIsSaving(false);
     handleClose();
