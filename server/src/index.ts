@@ -9,6 +9,7 @@ import { connectToMongoDb } from "./database/databaseSetup"
 import tripsRouter from "./routes/trips"
 import imagesRouter from "./routes/images"
 import usersRouter from "./routes/users"
+import peaksRouter from "./routes/peaks"
 
 dotenv.config()
 
@@ -27,6 +28,7 @@ app.use(morgan("tiny"))
 app.use("/api", tripsRouter)
 app.use("/api", imagesRouter)
 app.use("/api", usersRouter)
+app.use("/api", peaksRouter)
 
 app.use(express.static(path.join(__dirname, '../../client/build')))
 

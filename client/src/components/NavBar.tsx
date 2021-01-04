@@ -41,7 +41,7 @@ const NavBar = ({ setShowModal }: IProps) => {
                   <FaIcon icon={faPlus} className="mr-2"></FaIcon>Add trip
                 </Nav.Link>
               )}
-              <Nav.Link href="/summits" className="btn btn-sm text-light">
+              <Nav.Link href="/peaks" className="btn btn-sm text-light">
                 <FaIcon icon={faMountain} className="mr-2"></FaIcon>
                 Peaks
               </Nav.Link>

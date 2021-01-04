@@ -4,10 +4,12 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Image from "react-bootstrap/Image";
 import Carousel from "react-bootstrap/Carousel";
+import ListGroup from "react-bootstrap/ListGroup";
 import { FontAwesomeIcon as FaIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { v4 as uuid } from "uuid";
 import { IdToken, useAuth0 } from "@auth0/auth0-react";
+import { debounce } from "lodash";
 
 import ImagePlaceholder from "./ImagePlaceholder";
 import { ITrip } from "../models/Trip";
@@ -15,6 +17,8 @@ import { ITrip } from "../models/Trip";
 import "../styles/TripModal.scss";
 import { deleteTrip, saveTrip } from "../services/tripService";
 import Loading from "./Loading";
+import { searchPeaks } from "../services/peakService";
+import { IPeak } from "../models/Peak";
 
 interface IProps {
   trip: ITrip;
@@ -36,9 +40,27 @@ const TripModal = ({
 }: IProps) => {
   const { isLoading, user, getIdTokenClaims } = useAuth0();
 
+  const [peaks, setPeaks] = useState<IPeak[]>();
   const [files, setFiles] = useState<any[]>();
 
   const [isSaving, setIsSaving] = useState(false);
+
+  const handleSearch = (e: any) => {
+    const searchTerm = e.target.value;
+
+    searchPeak(searchTerm);
+  };
+
+  const searchPeak = debounce(
+    (searchTerm: string) => {
+      searchPeaks(searchTerm).then((peaks) => setPeaks(peaks));
+    },
+    250,
+    {
+      leading: false,
+      trailing: true,
+    }
+  );
 
   const onSave = async () => {
     setIsSaving(true);
@@ -159,6 +181,26 @@ const TripModal = ({
                   Upload images from the trip!
                 </Form.File.Label>
               </Form.File>
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Search peak</Form.Label>
+              <Form.Control
+                name="peakSearchTerm"
+                type="text"
+                size="sm"
+                className="bg-secondary text-light border-0"
+                onChange={(e) => handleSearch(e)}
+              ></Form.Control>
+              <ListGroup>
+                {peaks?.map((peak) => (
+                  <ListGroup.Item
+                    key={peak._id}
+                    className="bg-secondary small py-0"
+                  >
+                    <Button variant="secondary">{peak.name}</Button>
+                  </ListGroup.Item>
+                ))}
+              </ListGroup>
             </Form.Group>
             <Form.Group>
               <Form.Label>Description</Form.Label>

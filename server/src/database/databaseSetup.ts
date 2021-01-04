@@ -20,7 +20,7 @@ export const connectToMongoDb = async () => {
 
   // Retrieving mongodb collections
   collections.users = client.db().collection("users");
-  collections.summits = client.db().collection("summits");
+  collections.peaks = client.db().collection("peaks");
   collections.trips = client.db().collection("trips");
   collections.ascents = client.db().collection("ascents");
   collections.bucketlist = client.db().collection("bucketlist");
@@ -29,6 +29,8 @@ export const connectToMongoDb = async () => {
   // Creating indices
   collections.trips.createIndex({ updatedAt: 1 });
   collections.trips.createIndex({ createdAt: 1 });
+
+  collections.peaks.createIndex({ name: 1 })
 
   //Connection events
   client.on("connected", () => {

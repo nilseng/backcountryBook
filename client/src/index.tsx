@@ -7,7 +7,7 @@ import reportWebVitals from "./reportWebVitals";
 import history from "./utils/history";
 
 import "bootstrap/dist/css/bootstrap.min.css";
-import "./index.css";
+import "./index.scss";
 
 const onRedirectCallback = (appState: any) => {
   history.push(
