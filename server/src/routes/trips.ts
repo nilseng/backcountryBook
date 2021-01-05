@@ -1,11 +1,11 @@
 import express from "express"
-import { ObjectId, ObjectID } from "mongodb"
+import { ObjectID } from "mongodb"
 import { checkJwt } from "../auth/auth"
 
 import { collections as db } from "../database/databaseSetup"
 import { deleteImage } from "../services/imageService"
-import { updateUser } from "../services/userService"
-import { resolveUser } from "./users"
+import { resolvePeaks } from "../services/peakService"
+import { resolveUser, updateUser } from "../services/userService"
 
 const router = express.Router()
 
@@ -13,6 +13,7 @@ router.get("/trips", async (req: any, res) => {
     const trips = await db.trips.find({}).sort({ createdAt: -1 }).toArray()
     for (let trip of trips) {
         trip.user = await resolveUser(trip.sub)
+        if (trip.peakIds) trip.peaks = await resolvePeaks(trip.peakIds)
     }
     res.status(200).json(trips)
 })
@@ -41,7 +42,7 @@ router.delete("/trip", checkJwt, async (req: any, res) => {
             deleteImage(id)
         }
     }
-    const doc = await db.trips.deleteOne({ _id: new ObjectId(req.body._id) })
+    const doc = await db.trips.deleteOne({ _id: new ObjectID(req.body._id) })
     res.status(200).json(doc)
 })
 

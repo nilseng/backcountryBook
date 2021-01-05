@@ -1,10 +1,12 @@
+import { IPeak } from "./Peak";
 import { IUser } from "./User";
 
 export interface ITrip {
     _id?: string
     name: string
     description?: string
-    summitIds?: string[]
+    peakIds?: string[]
+    peaks?: IPeak[]
     imageIds: string[]
     createdAt?: number
     updatedAt?: number

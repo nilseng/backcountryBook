@@ -6,7 +6,7 @@ import Image from "react-bootstrap/Image";
 import Carousel from "react-bootstrap/Carousel";
 import ListGroup from "react-bootstrap/ListGroup";
 import { FontAwesomeIcon as FaIcon } from "@fortawesome/react-fontawesome";
-import { faCheck, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faTimes, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { v4 as uuid } from "uuid";
 import { IdToken, useAuth0 } from "@auth0/auth0-react";
 import { debounce } from "lodash";
@@ -19,6 +19,7 @@ import { deleteTrip, saveTrip } from "../services/tripService";
 import Loading from "./Loading";
 import { searchPeaks } from "../services/peakService";
 import { IPeak } from "../models/Peak";
+import { Badge } from "react-bootstrap";
 
 interface IProps {
   trip: ITrip;
@@ -40,7 +41,7 @@ const TripModal = ({
 }: IProps) => {
   const { isLoading, user, getIdTokenClaims } = useAuth0();
 
-  const [peaks, setPeaks] = useState<IPeak[]>();
+  const [searchedPeaks, setSearchedPeaks] = useState<IPeak[]>([]);
   const [files, setFiles] = useState<any[]>();
 
   const [isSaving, setIsSaving] = useState(false);
@@ -53,7 +54,7 @@ const TripModal = ({
 
   const searchPeak = debounce(
     (searchTerm: string) => {
-      searchPeaks(searchTerm).then((peaks) => setPeaks(peaks));
+      searchPeaks(searchTerm).then((peaks) => setSearchedPeaks(peaks));
     },
     250,
     {
@@ -62,12 +63,32 @@ const TripModal = ({
     }
   );
 
+  const addPeak = (peak: IPeak) => {
+    setTrip((trip: ITrip) => ({
+      ...trip,
+      peakIds: trip.peakIds ? [...trip.peakIds, peak._id] : [peak._id],
+      peaks: trip.peaks ? [...trip.peaks, peak] : [peak],
+    }));
+    setSearchedPeaks([]);
+  };
+
+  const removePeak = (index: number) => {
+    setTrip((trip: ITrip) => {
+      const peakIds = trip.peakIds ? [...trip.peakIds] : [];
+      peakIds.splice(index, 1);
+      const peaks = trip.peaks ? [...trip.peaks] : [];
+      peaks.splice(index, 1);
+      return { ...trip, peakIds, peaks };
+    });
+  };
+
   const onSave = async () => {
     setIsSaving(true);
     if (trip) {
       const token = await getIdTokenClaims();
       try {
         const imageIds = await saveImages(token);
+        const peaks = trip.peaks ? [...trip.peaks] : [];
         const savedTrip = imageIds
           ? await saveTrip(token, {
               ...trip,
@@ -75,7 +96,7 @@ const TripModal = ({
             })
           : await saveTrip(token, trip);
         setTrips((trips: ITrip[]) => [
-          { ...savedTrip, user },
+          { ...savedTrip, user, peaks },
           ...trips.filter((t) => t._id !== savedTrip._id),
         ]);
       } catch (e) {
@@ -103,6 +124,7 @@ const TripModal = ({
     setTrip(defaultTrip);
     setShowModal(false);
     setFiles(undefined);
+    setSearchedPeaks([]);
   };
 
   const handleImageChange = (files: any[]) => {
@@ -184,6 +206,18 @@ const TripModal = ({
             </Form.Group>
             <Form.Group>
               <Form.Label>Search peak</Form.Label>
+              {trip.peaks?.map((peak, i) => (
+                <Badge key={i} pill variant="primary ml-1">
+                  {peak.name}
+                  <Button
+                    size="sm"
+                    className="m-0 ml-1 p-0"
+                    onClick={() => removePeak(i)}
+                  >
+                    <FaIcon icon={faTimes} className="m-0" />
+                  </Button>
+                </Badge>
+              ))}
               <Form.Control
                 name="peakSearchTerm"
                 type="text"
@@ -192,12 +226,14 @@ const TripModal = ({
                 onChange={(e) => handleSearch(e)}
               ></Form.Control>
               <ListGroup>
-                {peaks?.map((peak) => (
+                {searchedPeaks?.map((peak) => (
                   <ListGroup.Item
                     key={peak._id}
                     className="bg-secondary small py-0"
                   >
-                    <Button variant="secondary">{peak.name}</Button>
+                    <Button variant="secondary" onClick={() => addPeak(peak)}>
+                      {peak.name}
+                    </Button>
                   </ListGroup.Item>
                 ))}
               </ListGroup>

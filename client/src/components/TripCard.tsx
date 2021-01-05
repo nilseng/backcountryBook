@@ -5,7 +5,7 @@ import Image from "react-bootstrap/Image";
 import Button from "react-bootstrap/Button";
 import { useAuth0 } from "@auth0/auth0-react";
 import { FontAwesomeIcon as FaIcon } from "@fortawesome/react-fontawesome";
-import { faPen } from "@fortawesome/free-solid-svg-icons";
+import { faMountain, faPen } from "@fortawesome/free-solid-svg-icons";
 
 import { ITrip } from "../models/Trip";
 import ImagePlaceholder from "./ImagePlaceholder";
@@ -86,7 +86,17 @@ const TripCard = ({ trip, setTripToEdit, setShowModal }: IProps) => {
           <ImagePlaceholder />
         )}
       </div>
-      {trip.description && <p className="text-muted">{trip.description}</p>}
+      {trip.peaks &&
+        trip.peaks.map((peak, i) => (
+          <div key={i}>
+            <FaIcon icon={faMountain} className="ml-1" />
+            <span className="small ml-1">{peak.name}</span>
+            <span className="small ml-1">{peak.height?.toLocaleString()}m</span>
+          </div>
+        ))}
+      {trip.description && (
+        <p className="text-muted ml-1">{trip.description}</p>
+      )}
     </Card>
   );
 };
