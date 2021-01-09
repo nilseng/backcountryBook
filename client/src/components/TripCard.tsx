@@ -92,11 +92,14 @@ const TripCard = ({ trip, setTripToEdit, setShowModal }: IProps) => {
             <FaIcon icon={faMountain} className="ml-1" />
             <span className="small ml-1">{peak.name}</span>
             <span className="small ml-1">{peak.height?.toLocaleString()}m</span>
+            <span className="small text-muted ml-1">{peak.area}</span>
+            {peak.area && peak.country && (
+              <span className="small text-muted">,</span>
+            )}
+            <span className="small text-muted ml-1">{peak.country}</span>
           </div>
         ))}
-      {trip.description && (
-        <p className="text-muted ml-1">{trip.description}</p>
-      )}
+      {trip.description && <p className="mt-2 ml-1">{trip.description}</p>}
     </Card>
   );
 };
