@@ -25,7 +25,7 @@ const Mapbox = () => {
         style: "mapbox://styles/nilseng/ckiuk1uf02ykx19szgx4psp19",
         center: [mapState.lng, mapState.lat],
         zoom: mapState.zoom,
-        pitch: 85,
+        pitch: 45,
         bearing: 80,
       });
 
@@ -49,6 +49,10 @@ const Mapbox = () => {
             "sky-atmosphere-sun-intensity": 15,
           },
         });
+      });
+
+      map.on("click", (e) => {
+        if (e.lngLat) new mapboxgl.Marker().setLngLat(e.lngLat).addTo(map);
       });
     }
   }, [mapEl, mapState]);

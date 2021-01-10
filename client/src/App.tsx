@@ -9,7 +9,6 @@ import PrivateRoute from "./components/PrivateRoute";
 import TripModal from "./components/TripModal";
 import { ITrip } from "./models/Trip";
 import Peaks from "./components/Peaks";
-import Mapbox from "./components/Mapbox";
 
 const defaultTrip: ITrip = {
   name: "",
@@ -47,7 +46,6 @@ const App = () => {
             />
           )}
           <Route path="/peaks" component={Peaks} />
-          <Route path="/map" component={Mapbox} />
           <PrivateRoute path="/profile" component={Profile} />
         </Switch>
       </Router>

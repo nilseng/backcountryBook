@@ -3,9 +3,8 @@ import { IUser } from "./User";
 export interface IPeak {
     _id?: string
     name: string
+    lngLat?: { lng: number, lat: number }
     height?: number
-    area?: string
-    country?: string
     sub?: string
     user?: IUser
 }

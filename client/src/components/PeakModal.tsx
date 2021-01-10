@@ -61,34 +61,33 @@ const PeakModal = ({
             type="text"
             value={peak.name}
             onChange={handleInputChange}
+            className="small bg-secondary text-light border-dark"
           ></Form.Control>
         </Form.Group>
+
+        {peak.lngLat && (
+          <Form.Group>
+            <Form.Label>Position</Form.Label>
+            <Form.Text>
+              Longitude: {peak.lngLat.lng}, Latitude: {peak.lngLat.lat}
+            </Form.Text>
+          </Form.Group>
+        )}
         <Form.Group>
-          <Form.Label>Height</Form.Label>
+          <Form.Label>
+            Elevation <span className="text-muted">[m]</span>
+          </Form.Label>
           <Form.Control
             name="height"
             type="number"
             value={!peak.height && peak.height !== 0 ? "" : peak.height}
             onChange={handleInputChange}
+            className="small bg-secondary text-light border-dark"
           ></Form.Control>
-        </Form.Group>
-        <Form.Group>
-          <Form.Label>Country</Form.Label>
-          <Form.Control
-            name="country"
-            type="text"
-            value={peak.country}
-            onChange={handleInputChange}
-          ></Form.Control>
-        </Form.Group>
-        <Form.Group>
-          <Form.Label>Area</Form.Label>
-          <Form.Control
-            name="area"
-            type="text"
-            value={peak.area}
-            onChange={handleInputChange}
-          ></Form.Control>
+          <Form.Text className="text-muted">
+            Peak elevation retrieved from the map is often inaccurate. Feel free
+            to correct it:)
+          </Form.Text>
         </Form.Group>
       </Modal.Body>
       <Modal.Footer className="bg-dark text-light border-0">
