@@ -12,6 +12,7 @@ import Peaks from "./components/Peaks";
 
 const defaultTrip: ITrip = {
   name: "",
+  tripDate: Date.now(),
   description: "",
   imageIds: [],
 };

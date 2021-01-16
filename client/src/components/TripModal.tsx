@@ -5,6 +5,7 @@ import Form from "react-bootstrap/Form";
 import Image from "react-bootstrap/Image";
 import Carousel from "react-bootstrap/Carousel";
 import ListGroup from "react-bootstrap/ListGroup";
+import Col from "react-bootstrap/Col";
 import { FontAwesomeIcon as FaIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faTimes, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { v4 as uuid } from "uuid";
@@ -19,7 +20,8 @@ import { deleteTrip, saveTrip } from "../services/tripService";
 import Loading from "./Loading";
 import { searchPeaks } from "../services/peakService";
 import { IPeak } from "../models/Peak";
-import { Badge } from "react-bootstrap";
+import { Badge, InputGroup } from "react-bootstrap";
+import { convertToDateInputFormat } from "../utils/dateFunctions";
 
 interface IProps {
   trip: ITrip;
@@ -154,7 +156,7 @@ const TripModal = ({
   if (isLoading) return null;
 
   return showModal && trip ? (
-    <Modal show={showModal} onHide={handleClose}>
+    <Modal id="tripModal" show={showModal} onHide={handleClose}>
       {isSaving && <Loading text={"Saving trip..."} height={"47rem"} />}
       {!isSaving && (
         <>
@@ -168,6 +170,32 @@ const TripModal = ({
                 className="bg-secondary text-light border-0"
               ></Form.Control>
             </Form.Group>
+            <Form.Row>
+              <Col sm={8}>
+                <InputGroup size="sm">
+                  <InputGroup.Prepend>
+                    <InputGroup.Text className="small">Date</InputGroup.Text>
+                  </InputGroup.Prepend>
+                  <Form.Control
+                    size="sm"
+                    type="datetime-local"
+                    placeholder="yyyy-mm-ddThh:mm"
+                    value={
+                      trip.tripDate
+                        ? convertToDateInputFormat(trip.tripDate)
+                        : undefined
+                    }
+                    onChange={(e) =>
+                      setTrip({
+                        ...trip,
+                        tripDate: Date.parse(e.target.value),
+                      })
+                    }
+                    className="bg-secondary text-light border-0"
+                  ></Form.Control>
+                </InputGroup>
+              </Col>
+            </Form.Row>
             <div className="image-container">
               {files && files.length > 0 && (
                 <Carousel className="h-100">
@@ -205,7 +233,7 @@ const TripModal = ({
               </Form.File>
             </Form.Group>
             <Form.Group>
-              <Form.Label>Search peak</Form.Label>
+              <Form.Label>Peaks</Form.Label>
               {trip.peaks?.map((peak, i) => (
                 <Badge key={i} pill variant="primary ml-1">
                   {peak.name}
@@ -221,6 +249,7 @@ const TripModal = ({
               <Form.Control
                 name="peakSearchTerm"
                 type="text"
+                placeholder="Search peaks..."
                 size="sm"
                 className="bg-secondary text-light border-0"
                 onChange={(e) => handleSearch(e)}

@@ -42,9 +42,9 @@ const TripCard = ({ trip, setTripToEdit, setShowModal }: IProps) => {
   }, [trip.imageIds]);
 
   useEffect(() => {
-    if (trip?.createdAt) {
+    if (trip?.tripDate) {
       setDate(
-        new Date(+trip.createdAt).toLocaleString(undefined, {
+        new Date(+trip.tripDate).toLocaleString(undefined, {
           year: "numeric",
           month: "numeric",
           day: "numeric",

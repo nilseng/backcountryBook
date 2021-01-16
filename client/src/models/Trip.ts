@@ -8,6 +8,7 @@ export interface ITrip {
     peakIds?: string[]
     peaks?: IPeak[]
     imageIds: string[]
+    tripDate?: number
     createdAt?: number
     updatedAt?: number
     sub?: string

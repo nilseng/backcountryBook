@@ -1,21 +1,34 @@
-.preview-image {
-  max-width: 100%;
-  // Setting margin-top to half of image-container height to center the top of the image
-  margin-top: 10rem;
-  transform: translateY(-50%);
-  overflow: hidden;
-}
-
-.image-container {
-  height: 20rem;
-
-  .carousel-inner {
-    max-height: 100%;
+#tripModal {
+  .preview-image {
+    max-width: 100%;
+    // Setting margin-top to half of image-container height to center the top of the image
+    margin-top: 10rem;
+    transform: translateY(-50%);
+    overflow: hidden;
   }
-}
 
-.modal-dialog {
-  .modal-content {
-    background-color: #343a40;
+  .image-container {
+    height: 20rem;
+
+    .carousel-inner {
+      max-height: 100%;
+    }
+  }
+
+  .modal-dialog {
+    .modal-content {
+      background-color: #343a40;
+    }
+  }
+
+  ::placeholder {
+    /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: #faf8f9;
+    opacity: 1; /* Firefox */
+  }
+
+  ::-ms-input-placeholder {
+    /* Microsoft Edge */
+    color: #faf8f9;
   }
 }
