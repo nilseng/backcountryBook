@@ -50,6 +50,16 @@ const TripCard = ({ trip, setTripToEdit, setShowModal }: IProps) => {
           day: "numeric",
         })
       );
+      return;
+    }
+    if (trip.createdAt) {
+      setDate(
+        new Date(+trip.createdAt).toLocaleString(undefined, {
+          year: "numeric",
+          month: "numeric",
+          day: "numeric",
+        })
+      );
     }
   }, [trip]);
 
