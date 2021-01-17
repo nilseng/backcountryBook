@@ -53,7 +53,7 @@ const PeakModal = ({
 
   return (
     <Modal show={showModal} onHide={handleHide}>
-      <Modal.Body className="text-light">
+      <Modal.Body className="bg-dark text-light">
         <Form.Group>
           <Form.Label>Peak name</Form.Label>
           <Form.Control
