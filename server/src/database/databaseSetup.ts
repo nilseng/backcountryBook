@@ -28,7 +28,7 @@ export const connectToMongoDb = async () => {
 
   // Creating indices
   collections.trips.createIndex({ updatedAt: 1 });
-  collections.trips.createIndex({ createdAt: 1 });
+  collections.trips.createIndex({ tripDate: 1, createdAt: 1 });
 
   collections.peaks.createIndex({ name: 1 })
 

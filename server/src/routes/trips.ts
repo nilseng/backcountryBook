@@ -10,7 +10,7 @@ import { resolveUser, updateUser } from "../services/userService"
 const router = express.Router()
 
 router.get("/trips", async (req: any, res) => {
-    const trips = await db.trips.find({}).sort({ createdAt: -1 }).toArray()
+    const trips = await db.trips.find({}).sort({ tripDate: -1, createdAt: -1 }).toArray()
     for (let trip of trips) {
         trip.user = await resolveUser(trip.sub)
         if (trip.peakIds) trip.peaks = await resolvePeaks(trip.peakIds)
@@ -25,6 +25,7 @@ router.post("/trip", checkJwt, async (req: any, res) => {
     const date = Date.now()
     if (!trip.createdAt) trip.createdAt = date
     trip.updatedAt = date
+    if (!trip.tripDate) trip.tripDate = date
     const { _id, ...props } = trip
     try {
         const doc = await db.trips.findOneAndUpdate({ _id: new ObjectID(_id) }, { $set: props }, { upsert: true, returnOriginal: false })

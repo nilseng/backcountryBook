@@ -183,7 +183,7 @@ const TripModal = ({
                     value={
                       trip.tripDate
                         ? convertToDateInputFormat(trip.tripDate)
-                        : undefined
+                        : ""
                     }
                     onChange={(e) =>
                       setTrip({
