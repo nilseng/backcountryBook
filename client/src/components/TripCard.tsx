@@ -73,7 +73,7 @@ const TripCard = ({ trip, setTripToEdit, setShowModal }: IProps) => {
         {images && images.length > 0 ? (
           <Carousel className="h-100">
             {images.map((image, i) => (
-              <Carousel.Item key={i}>
+              <Carousel.Item key={i} interval={undefined}>
                 <Image
                   className="card-image rounded-0 pb-2"
                   src={image}
