@@ -48,6 +48,8 @@ const TripCard = ({ trip, setTripToEdit, setShowModal }: IProps) => {
           year: "numeric",
           month: "numeric",
           day: "numeric",
+          hour: "numeric",
+          minute: "numeric",
         })
       );
       return;
@@ -58,6 +60,8 @@ const TripCard = ({ trip, setTripToEdit, setShowModal }: IProps) => {
           year: "numeric",
           month: "numeric",
           day: "numeric",
+          hour: "numeric",
+          minute: "numeric",
         })
       );
     }
