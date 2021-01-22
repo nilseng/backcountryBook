@@ -27,7 +27,12 @@ const Peaks = () => {
     });
   }, [setPeaks]);
 
-  if (isLoadingPeaks) return <Loading />;
+  if (isLoadingPeaks)
+    return (
+      <div className="bg-dark vh-100">
+        <Loading />
+      </div>
+    );
 
   return peaks ? (
     <>

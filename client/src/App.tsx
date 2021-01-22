@@ -37,7 +37,7 @@ const App = () => {
             <Route
               path="/"
               exact
-              render={(props) => (
+              render={() => (
                 <Feed
                   trips={trips}
                   setTrip={setTrip}

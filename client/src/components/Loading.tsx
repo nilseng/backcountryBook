@@ -9,7 +9,7 @@ interface IProps {
 const Loading = ({ text, height }: IProps) => {
   return (
     <div
-      className="d-flex flex-column justify-content-center align-items-center"
+      className="bg-dark d-flex flex-column justify-content-center align-items-center"
       style={{ height: height }}
     >
       <AnimatedLogo color="#faf8f9" />

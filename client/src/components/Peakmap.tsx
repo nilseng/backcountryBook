@@ -3,6 +3,7 @@ import mapboxgl from "mapbox-gl";
 
 import { IPeak } from "../models/Peak";
 import Map3DControl from "../utils/Map3DControl";
+import { useAuth0 } from "@auth0/auth0-react";
 
 // @ts-ignore
 // eslint-disable-next-line import/no-webpack-loader-syntax
@@ -19,6 +20,8 @@ const tileQueryUrl =
   "https://api.mapbox.com/v4/mapbox.mapbox-terrain-v2/tilequery";
 
 const Peakmap = ({ setPeak, peaks, defaultPeak, setShowModal }: IProps) => {
+  const { isAuthenticated } = useAuth0();
+
   mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN || "";
 
   const mapEl = useRef<HTMLDivElement>(null);
@@ -64,7 +67,6 @@ const Peakmap = ({ setPeak, peaks, defaultPeak, setShowModal }: IProps) => {
   };
 
   const getElevation = async (
-    map: mapboxgl.Map,
     e: mapboxgl.MapMouseEvent & mapboxgl.EventData
   ) => {
     const res = await fetch(
@@ -100,9 +102,10 @@ const Peakmap = ({ setPeak, peaks, defaultPeak, setShowModal }: IProps) => {
           }
           //enable3D(map);
           map.on("click", async (e) => {
+            if (!isAuthenticated) return;
             if (e.lngLat) {
               peakMarker.current.setLngLat(e.lngLat).addTo(map);
-              const elevation = await getElevation(map, e);
+              const elevation = await getElevation(e);
               setPeak({ ...defaultPeak, lngLat: e.lngLat, height: elevation });
               setShowModal(true);
             }
@@ -114,7 +117,7 @@ const Peakmap = ({ setPeak, peaks, defaultPeak, setShowModal }: IProps) => {
         }
       });
     }
-  }, [mapEl, map, defaultPeak, setPeak, setShowModal]);
+  }, [mapEl, map, defaultPeak, setPeak, setShowModal, isAuthenticated]);
 
   useEffect(() => {
     if (map && peaks) {
@@ -137,12 +140,14 @@ const Peakmap = ({ setPeak, peaks, defaultPeak, setShowModal }: IProps) => {
           height: "calc(100vh - 58px)",
         }}
       >
-        <div
-          className="bg-dark text-light position-absolute rounded p-2 m-2"
-          style={{ zIndex: 999 }}
-        >
-          Zoom in and click the map to add peak
-        </div>
+        {isAuthenticated && (
+          <div
+            className="bg-dark text-light position-absolute rounded p-2 m-2"
+            style={{ zIndex: 999 }}
+          >
+            Zoom in and click the map to add peak
+          </div>
+        )}
       </div>
     </>
   );
