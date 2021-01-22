@@ -1,5 +1,6 @@
 import jwt from "express-jwt"
 import jwksRsa from "jwks-rsa"
+import aws from "aws-sdk"
 import dotenv from "dotenv"
 
 dotenv.config()

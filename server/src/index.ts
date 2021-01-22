@@ -10,6 +10,7 @@ import tripsRouter from "./routes/trips"
 import imagesRouter from "./routes/images"
 import usersRouter from "./routes/users"
 import peaksRouter from "./routes/peaks"
+import mapsRouter from "./routes/maps"
 
 dotenv.config()
 
@@ -29,6 +30,7 @@ app.use("/api", tripsRouter)
 app.use("/api", imagesRouter)
 app.use("/api", usersRouter)
 app.use("/api", peaksRouter)
+app.use("/api", mapsRouter)
 
 app.use(express.static(path.join(__dirname, '../../client/build')))
 
