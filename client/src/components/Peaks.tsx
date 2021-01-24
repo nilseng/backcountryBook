@@ -21,10 +21,14 @@ const Peaks = () => {
 
   useEffect(() => {
     setIsLoadingPeaks(true);
-    getPeaks().then((res) => {
-      setPeaks(res);
-      setIsLoadingPeaks(false);
-    });
+    getPeaks()
+      .then((res) => {
+        setPeaks(res);
+        setIsLoadingPeaks(false);
+      })
+      .catch((e) => {
+        setIsLoadingPeaks(false);
+      });
   }, [setPeaks]);
 
   if (isLoadingPeaks)
@@ -41,6 +45,7 @@ const Peaks = () => {
         peaks={peaks}
         defaultPeak={defaultPeak}
         setShowModal={setShowModal}
+        _3d={true}
       />
       <PeakModal
         peak={peak}

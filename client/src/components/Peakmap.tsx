@@ -10,22 +10,44 @@ import { useAuth0 } from "@auth0/auth0-react";
 mapboxgl.workerClass = require("worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker").default;
 
 interface IProps {
-  setPeak: any;
-  peaks: IPeak[];
-  defaultPeak: IPeak;
-  setShowModal: any;
+  setPeak?: any;
+  peaks?: IPeak[];
+  defaultPeak?: IPeak;
+  setShowModal?: any;
+  route?: any;
+  height?: string;
+  width?: string;
+  bounds?: [number, number, number, number];
+  _3d?: boolean;
+  noZoom?: boolean;
 }
 
 const tileQueryUrl =
   "https://api.mapbox.com/v4/mapbox.mapbox-terrain-v2/tilequery";
 
-const Peakmap = ({ setPeak, peaks, defaultPeak, setShowModal }: IProps) => {
+const defaultHeight = "calc(100vh - 58px)";
+const defaultWidth = "vw-100";
+
+const Peakmap = ({
+  setPeak,
+  peaks,
+  defaultPeak,
+  setShowModal,
+  route,
+  height,
+  width,
+  bounds,
+  _3d,
+  noZoom,
+}: IProps) => {
   const { isAuthenticated } = useAuth0();
 
   mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN || "";
 
   const mapEl = useRef<HTMLDivElement>(null);
   const [map, setMap] = useState<mapboxgl.Map>();
+  const [isMapLoaded, setIsMapLoaded] = useState(false);
+  const [isStyleLoaded, setIsStyleLoaded] = useState(false);
   const peakMarker = useRef<mapboxgl.Marker>(
     new mapboxgl.Marker({ draggable: true })
   );
@@ -84,7 +106,7 @@ const Peakmap = ({ setPeak, peaks, defaultPeak, setShowModal }: IProps) => {
       setMap(
         new mapboxgl.Map({
           container: mapEl.current,
-          style: "mapbox://styles/nilseng/ckiuk1uf02ykx19szgx4psp19",
+          style: "mapbox://styles/mapbox/outdoors-v10",
           zoom: 1,
           maxBounds: [-200, -85, 200, 85],
         })
@@ -93,31 +115,51 @@ const Peakmap = ({ setPeak, peaks, defaultPeak, setShowModal }: IProps) => {
   }, [setMap, mapEl]);
 
   useEffect(() => {
+    if (bounds && isMapLoaded) map?.fitBounds(bounds, { duration: 0 });
+  }, [map, bounds, isMapLoaded]);
+
+  useEffect(() => {
+    if (noZoom && isMapLoaded) map?.scrollZoom.disable();
+  }, [map, noZoom, isMapLoaded]);
+
+  useEffect(() => {
     if (map && mapEl.current) {
-      map.on("zoom", () => {
-        if (map.getZoom() >= 10) {
-          if (!map.hasControl(_3DControl.current)) {
-            map.addControl(_3DControl.current);
-            _3DControl.current.on("click", () => toggle3D(map));
-          }
-          //enable3D(map);
-          map.on("click", async (e) => {
-            if (!isAuthenticated) return;
-            if (e.lngLat) {
-              peakMarker.current.setLngLat(e.lngLat).addTo(map);
-              const elevation = await getElevation(e);
-              setPeak({ ...defaultPeak, lngLat: e.lngLat, height: elevation });
-              setShowModal(true);
-            }
-          });
-        } else {
-          if (map.hasControl(_3DControl.current)) {
-            map.removeControl(_3DControl.current);
-          }
-        }
+      map.on("load", () => {
+        setIsMapLoaded(true);
       });
+
+      map.on("style.load", () => {
+        setIsStyleLoaded(true);
+      });
+
+      _3d &&
+        map.on("zoom", () => {
+          if (map.getZoom() >= 10) {
+            if (!map.hasControl(_3DControl.current)) {
+              map.addControl(_3DControl.current);
+              _3DControl.current.on("click", () => toggle3D(map));
+            }
+            map.on("click", async (e) => {
+              if (!isAuthenticated) return;
+              if (e.lngLat) {
+                peakMarker.current.setLngLat(e.lngLat).addTo(map);
+                const elevation = await getElevation(e);
+                setPeak({
+                  ...defaultPeak,
+                  lngLat: e.lngLat,
+                  height: elevation,
+                });
+                setShowModal(true);
+              }
+            });
+          } else {
+            if (map.hasControl(_3DControl.current)) {
+              map.removeControl(_3DControl.current);
+            }
+          }
+        });
     }
-  }, [mapEl, map, defaultPeak, setPeak, setShowModal, isAuthenticated]);
+  }, [mapEl, map, defaultPeak, setPeak, setShowModal, isAuthenticated, _3d]);
 
   useEffect(() => {
     if (map && peaks) {
@@ -130,17 +172,39 @@ const Peakmap = ({ setPeak, peaks, defaultPeak, setShowModal }: IProps) => {
     }
   }, [map, peaks]);
 
+  useEffect(() => {
+    if (route && map && isStyleLoaded) {
+      const source = map.getSource("route");
+      if (!source) map.addSource("route", { type: "geojson", data: route });
+      if (!map.getLayer("route")) {
+        map.addLayer({
+          id: "route",
+          type: "line",
+          source: "route",
+          layout: {
+            "line-join": "round",
+            "line-cap": "round",
+          },
+          paint: {
+            "line-color": "#1c2e3f",
+            "line-width": 2,
+          },
+        });
+      }
+    }
+  }, [map, route, isStyleLoaded]);
+
   return (
     <>
       <div
         ref={mapEl}
         id="map"
-        className="vw-100"
         style={{
-          height: "calc(100vh - 58px)",
+          height: height ? height : defaultHeight,
+          width: width ? width : defaultWidth,
         }}
       >
-        {isAuthenticated && (
+        {isAuthenticated && setPeak && (
           <div
             className="bg-dark text-light position-absolute rounded p-2 m-2"
             style={{ zIndex: 999 }}

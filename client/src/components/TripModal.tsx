@@ -22,6 +22,8 @@ import { searchPeaks } from "../services/peakService";
 import { IPeak } from "../models/Peak";
 import { Badge, InputGroup } from "react-bootstrap";
 import { convertToDateInputFormat } from "../utils/dateFunctions";
+import { getBounds, gpxToGeojson, saveRoute } from "../services/routeService";
+import Peakmap from "./Peakmap";
 
 interface IProps {
   trip: ITrip;
@@ -44,8 +46,9 @@ const TripModal = ({
   const { isLoading, user, getIdTokenClaims } = useAuth0();
 
   const [searchedPeaks, setSearchedPeaks] = useState<IPeak[]>([]);
+  const [geojson, setGeojson] = useState<any>();
+  const [bounds, setBounds] = useState<[number, number, number, number]>();
   const [files, setFiles] = useState<any[]>();
-
   const [isSaving, setIsSaving] = useState(false);
 
   const handleSearch = (e: any) => {
@@ -88,22 +91,20 @@ const TripModal = ({
     setIsSaving(true);
     if (trip) {
       const token = await getIdTokenClaims();
-      try {
-        const imageIds = await saveImages(token);
-        const peaks = trip.peaks ? [...trip.peaks] : [];
-        const savedTrip = imageIds
-          ? await saveTrip(token, {
-              ...trip,
-              imageIds: [...trip.imageIds, ...imageIds],
-            })
-          : await saveTrip(token, trip);
-        setTrips((trips: ITrip[]) => [
-          { ...savedTrip, user, peaks },
-          ...trips.filter((t) => t._id !== savedTrip._id),
-        ]);
-      } catch (e) {
-        console.log(`Something went wrong: ${e}`);
-      }
+      const routeId = await saveGeojson(token);
+      const imageIds = await saveImages(token);
+      const peaks = trip.peaks ? [...trip.peaks] : [];
+      const savedTrip = imageIds
+        ? await saveTrip(token, {
+            ...trip,
+            imageIds: [...trip.imageIds, ...imageIds],
+            routeId,
+          })
+        : await saveTrip(token, { ...trip, routeId });
+      setTrips((trips: ITrip[]) => [
+        { ...savedTrip, user, peaks },
+        ...trips.filter((t) => t._id !== savedTrip._id),
+      ]);
     }
     setIsSaving(false);
     handleClose();
@@ -129,8 +130,22 @@ const TripModal = ({
     setSearchedPeaks([]);
   };
 
+  const handleGpxChange = async (files: any[]) => {
+    if (!files || Array.from(files)?.length === 0) return;
+    const token = await getIdTokenClaims();
+    const res = await gpxToGeojson(token, Array.from(files)[0]);
+    setGeojson(res);
+    const bounds = getBounds(res?.features[0]?.geometry?.coordinates);
+    setBounds([bounds.xMin, bounds.yMin, bounds.xMax, bounds.yMax]);
+  };
+
   const handleImageChange = (files: any[]) => {
     setFiles(Array.from(files));
+  };
+
+  const saveGeojson = async (token: IdToken) => {
+    if (!(token && trip && geojson)) return;
+    return await saveRoute(token, geojson);
   };
 
   const saveImages = async (token: IdToken) => {
@@ -156,7 +171,12 @@ const TripModal = ({
   if (isLoading) return null;
 
   return showModal && trip ? (
-    <Modal id="tripModal" show={showModal} onHide={handleClose}>
+    <Modal
+      id="tripModal"
+      show={showModal}
+      onHide={handleClose}
+      animation={false}
+    >
       {isSaving && <Loading text={"Saving trip..."} height={"47rem"} />}
       {!isSaving && (
         <>
@@ -170,7 +190,7 @@ const TripModal = ({
                 className="bg-secondary text-light border-0"
               ></Form.Control>
             </Form.Group>
-            <Form.Row>
+            <Form.Row className="mb-2">
               <Col sm={8}>
                 <InputGroup size="sm">
                   <InputGroup.Prepend>
@@ -196,6 +216,29 @@ const TripModal = ({
                 </InputGroup>
               </Col>
             </Form.Row>
+            <Peakmap
+              route={geojson}
+              height="20rem"
+              width="auto"
+              bounds={bounds}
+              _3d={false}
+            />
+            <Form.Group className="mt-2">
+              <Form.File custom>
+                <Form.File.Input
+                  accept="application/gpx+xml"
+                  onChange={async (e: any) =>
+                    await handleGpxChange(e.target.files)
+                  }
+                />
+                <Form.File.Label
+                  data-browse="Select GPX file"
+                  className="small bg-secondary text-light border-dark"
+                >
+                  Upload a GPX file to see your route on the map.
+                </Form.File.Label>
+              </Form.File>
+            </Form.Group>
             <div className="image-container">
               {files && files.length > 0 && (
                 <Carousel className="h-100">

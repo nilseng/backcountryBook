@@ -13,4 +13,5 @@ export interface ITrip {
     updatedAt?: number
     sub?: string
     user?: IUser
+    routeId?: string
 }

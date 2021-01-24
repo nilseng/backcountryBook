@@ -8,8 +8,10 @@ import { FontAwesomeIcon as FaIcon } from "@fortawesome/react-fontawesome";
 import { faMountain, faPen } from "@fortawesome/free-solid-svg-icons";
 
 import { ITrip } from "../models/Trip";
-import ImagePlaceholder from "./ImagePlaceholder";
 import "../styles/Card.scss";
+import { getBounds, getRoute } from "../services/routeService";
+import Peakmap from "./Peakmap";
+import ImagePlaceholder from "./ImagePlaceholder";
 
 interface IProps {
   trip: ITrip;
@@ -20,12 +22,29 @@ interface IProps {
 const TripCard = ({ trip, setTripToEdit, setShowModal }: IProps) => {
   const { user } = useAuth0();
   const [date, setDate] = useState<string>();
+  const [route, setRoute] = useState();
+  const [bounds, setBounds] = useState<[number, number, number, number]>();
   const [images, setImages] = useState<any[]>([]);
 
   const onEdit = () => {
     setTripToEdit(trip);
     setShowModal(true);
   };
+
+  useEffect(() => {
+    if (trip.routeId) {
+      getRoute(trip.routeId).then((res) => {
+        const boundsObject = getBounds(res?.features[0]?.geometry?.coordinates);
+        setBounds([
+          boundsObject.xMin,
+          boundsObject.yMin,
+          boundsObject.xMax,
+          boundsObject.yMax,
+        ]);
+        setRoute(res);
+      });
+    }
+  }, [trip.routeId]);
 
   useEffect(() => {
     if (trip.imageIds && trip.imageIds.length > 0) {
@@ -84,6 +103,7 @@ const TripCard = ({ trip, setTripToEdit, setShowModal }: IProps) => {
         {trip.name && <Card.Title className="mb-0">{trip.name}</Card.Title>}
       </div>
       <div className="card-image-container">
+        {!images && <ImagePlaceholder />}
         {images && images.length > 0 ? (
           <Carousel
             className="h-100"
@@ -101,10 +121,18 @@ const TripCard = ({ trip, setTripToEdit, setShowModal }: IProps) => {
               </Carousel.Item>
             ))}
           </Carousel>
-        ) : (
-          <ImagePlaceholder />
-        )}
+        ) : null}
       </div>
+      {route && (
+        <Peakmap
+          route={route}
+          height="20rem"
+          width="auto"
+          bounds={bounds}
+          _3d={false}
+          noZoom
+        />
+      )}
       {trip.peaks &&
         trip.peaks.map((peak, i) => (
           <div key={i}>
