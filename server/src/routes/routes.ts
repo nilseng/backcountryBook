@@ -51,7 +51,8 @@ router.post(
   checkJwt,
   upload.array("gpx"),
   (req: any, res: any) => {
-    if (!req.files || !(req.files.length === 0)) {
+    console.log(req.files)
+    if (!req.files || req.files.length === 0) {
       return res.status(400).json({ message: "No file found" });
     }
     const gpxString = req.files[0].buffer.toString();
