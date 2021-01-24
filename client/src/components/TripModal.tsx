@@ -126,6 +126,8 @@ const TripModal = ({
   const handleClose = () => {
     setTrip(defaultTrip);
     setShowModal(false);
+    setGeojson(undefined);
+    setBounds(undefined);
     setFiles(undefined);
     setSearchedPeaks([]);
   };
