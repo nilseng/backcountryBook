@@ -18,9 +18,11 @@ interface IProps {
   height?: string;
   width?: string;
   bounds?: [number, number, number, number];
+  setIsBoundsFit?: any;
   _3d?: boolean;
   noZoom?: boolean;
   interactive?: boolean;
+  visible?: boolean;
 }
 
 const tileQueryUrl =
@@ -38,9 +40,11 @@ const Peakmap = ({
   height,
   width,
   bounds,
+  setIsBoundsFit,
   _3d,
   noZoom,
   interactive = true,
+  visible = true,
 }: IProps) => {
   const { isAuthenticated } = useAuth0();
 
@@ -118,8 +122,11 @@ const Peakmap = ({
   }, [setMap, mapEl, interactive]);
 
   useEffect(() => {
-    if (bounds && isMapLoaded) map?.fitBounds(bounds, { duration: 0 });
-  }, [map, bounds, isMapLoaded]);
+    if (bounds && isMapLoaded) {
+      map?.fitBounds(bounds, { duration: 0 });
+      setIsBoundsFit(true);
+    }
+  }, [map, bounds, isMapLoaded, setIsBoundsFit]);
 
   useEffect(() => {
     if (noZoom && isMapLoaded) map?.scrollZoom.disable();
@@ -204,6 +211,7 @@ const Peakmap = ({
       style={{
         height: height ? height : defaultHeight,
         width: width ? width : defaultWidth,
+        visibility: visible ? "visible" : "hidden",
       }}
     >
       {isAuthenticated && setPeak && (
