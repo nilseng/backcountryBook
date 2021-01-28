@@ -19,6 +19,8 @@ interface IProps {
   setShowModal: any;
 }
 
+const routeMargin = 0.002;
+
 const TripCard = ({ trip, setTripToEdit, setShowModal }: IProps) => {
   const { user } = useAuth0();
   const [date, setDate] = useState<string>();
@@ -36,10 +38,10 @@ const TripCard = ({ trip, setTripToEdit, setShowModal }: IProps) => {
       getRoute(trip.routeId).then((res) => {
         const boundsObject = getBounds(res?.features[0]?.geometry?.coordinates);
         setBounds([
-          boundsObject.xMin,
-          boundsObject.yMin,
-          boundsObject.xMax,
-          boundsObject.yMax,
+          boundsObject.xMin - routeMargin,
+          boundsObject.yMin - routeMargin,
+          boundsObject.xMax + routeMargin,
+          boundsObject.yMax + routeMargin,
         ]);
         setRoute(res);
       });
@@ -130,7 +132,7 @@ const TripCard = ({ trip, setTripToEdit, setShowModal }: IProps) => {
           width="auto"
           bounds={bounds}
           _3d={false}
-          noZoom
+          interactive={false}
         />
       )}
       {trip.peaks &&

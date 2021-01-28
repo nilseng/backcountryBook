@@ -20,6 +20,7 @@ interface IProps {
   bounds?: [number, number, number, number];
   _3d?: boolean;
   noZoom?: boolean;
+  interactive?: boolean;
 }
 
 const tileQueryUrl =
@@ -39,6 +40,7 @@ const Peakmap = ({
   bounds,
   _3d,
   noZoom,
+  interactive = true,
 }: IProps) => {
   const { isAuthenticated } = useAuth0();
 
@@ -109,10 +111,11 @@ const Peakmap = ({
           style: "mapbox://styles/mapbox/outdoors-v10",
           zoom: 1,
           maxBounds: [-200, -85, 200, 85],
+          interactive,
         })
       );
     }
-  }, [setMap, mapEl]);
+  }, [setMap, mapEl, interactive]);
 
   useEffect(() => {
     if (bounds && isMapLoaded) map?.fitBounds(bounds, { duration: 0 });
@@ -195,25 +198,23 @@ const Peakmap = ({
   }, [map, route, isStyleLoaded]);
 
   return (
-    <>
-      <div
-        ref={mapEl}
-        id="map"
-        style={{
-          height: height ? height : defaultHeight,
-          width: width ? width : defaultWidth,
-        }}
-      >
-        {isAuthenticated && setPeak && (
-          <div
-            className="bg-dark text-light position-absolute rounded p-2 m-2"
-            style={{ zIndex: 999 }}
-          >
-            Zoom in and click the map to add peak
-          </div>
-        )}
-      </div>
-    </>
+    <div
+      ref={mapEl}
+      id="map"
+      style={{
+        height: height ? height : defaultHeight,
+        width: width ? width : defaultWidth,
+      }}
+    >
+      {isAuthenticated && setPeak && (
+        <div
+          className="bg-dark text-light position-absolute rounded p-2 m-2"
+          style={{ zIndex: 999 }}
+        >
+          Zoom in and click the map to add peak
+        </div>
+      )}
+    </div>
   );
 };
 
