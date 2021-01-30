@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import mapboxgl from "mapbox-gl";
+import { useLocation } from "react-router-dom";
 
 import { IPeak } from "../models/Peak";
 import Map3DControl from "../utils/Map3DControl";
@@ -32,6 +33,10 @@ const tileQueryUrl =
 const defaultHeight = "calc(100vh - 58px)";
 const defaultWidth = "vw-100";
 
+const useQuery = () => {
+  return new URLSearchParams(useLocation().search);
+};
+
 const Peakmap = ({
   setPeak,
   peaks,
@@ -50,15 +55,26 @@ const Peakmap = ({
 }: IProps) => {
   const { isAuthenticated } = useAuth0();
 
+  const query = useQuery();
+  const [peakId, setPeakId] = useState<string>();
+
+  useEffect(() => {
+    const peakId = query.get("peakId");
+    if (peakId) setPeakId(peakId);
+  }, [query, peakId]);
+
   mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN || "";
 
   const mapEl = useRef<HTMLDivElement>(null);
   const [map, setMap] = useState<mapboxgl.Map>();
+
   const [isMapLoaded, setIsMapLoaded] = useState(false);
   const [isStyleLoaded, setIsStyleLoaded] = useState(false);
+
   const peakMarker = useRef<mapboxgl.Marker>(
     new mapboxgl.Marker({ draggable: true })
   );
+
   const _3DControl = useRef<Map3DControl>(new Map3DControl());
   const geoLocateControl = useRef<mapboxgl.GeolocateControl>(
     new mapboxgl.GeolocateControl({
@@ -198,6 +214,26 @@ const Peakmap = ({
       }
     }
   }, [map, peaks]);
+
+  /*   const rotateCamera = (timestamp: number) => {
+    // clamp the rotation between 0 -360 degrees
+    // Divide timestamp by 100 to slow rotation to ~10 degrees / sec
+    if(map) map.rotateTo((timestamp / 100) % 360, { duration: 0 });
+    // Request the next frame of the animation.
+    requestAnimationFrame(rotateCamera);
+    } */
+
+  useEffect(() => {
+    if (map && peakId && isMapLoaded && isStyleLoaded && peaks) {
+      const peak = peaks.find((p) => p._id === peakId);
+      if (peak?.lngLat) {
+        map.setZoom(14);
+        map.setCenter([peak.lngLat.lng, peak.lngLat.lat]);
+        if (!map.getSource("mapbox-dem")) toggle3D(map);
+        //rotateCamera(0)
+      }
+    }
+  }, [map, isMapLoaded, isStyleLoaded, peaks, peakId]);
 
   useEffect(() => {
     if (route && map && isStyleLoaded) {
