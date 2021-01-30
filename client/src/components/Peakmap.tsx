@@ -185,7 +185,7 @@ const Peakmap = ({
     hasGeoLocationControl &&
       map &&
       !map.hasControl(geoLocateControl.current) &&
-      map.addControl(geoLocateControl.current, "bottom-right");
+      map.addControl(geoLocateControl.current, "top-left");
   }, [isMapLoaded, hasGeoLocationControl, map]);
 
   useEffect(() => {
