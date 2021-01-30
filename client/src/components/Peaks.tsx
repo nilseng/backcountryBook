@@ -46,6 +46,7 @@ const Peaks = () => {
         defaultPeak={defaultPeak}
         setShowModal={setShowModal}
         _3d={true}
+        hasGeoLocationControl={true}
       />
       <PeakModal
         peak={peak}

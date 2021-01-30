@@ -23,7 +23,7 @@ interface IProps {
   noZoom?: boolean;
   interactive?: boolean;
   visible?: boolean;
-  hasGeoLocation?: boolean;
+  hasGeoLocationControl?: boolean;
 }
 
 const tileQueryUrl =
@@ -46,7 +46,7 @@ const Peakmap = ({
   noZoom,
   interactive = true,
   visible = true,
-  hasGeoLocation,
+  hasGeoLocationControl,
 }: IProps) => {
   const { isAuthenticated } = useAuth0();
 
@@ -60,6 +60,14 @@ const Peakmap = ({
     new mapboxgl.Marker({ draggable: true })
   );
   const _3DControl = useRef<Map3DControl>(new Map3DControl());
+  const geoLocateControl = useRef<mapboxgl.GeolocateControl>(
+    new mapboxgl.GeolocateControl({
+      positionOptions: {
+        enableHighAccuracy: true,
+      },
+      trackUserLocation: true,
+    })
+  );
 
   const toggle3D = (map: mapboxgl.Map) => {
     if (!map.getSource("mapbox-dem")) {
@@ -172,6 +180,13 @@ const Peakmap = ({
         });
     }
   }, [mapEl, map, defaultPeak, setPeak, setShowModal, isAuthenticated, _3d]);
+
+  useEffect(() => {
+    hasGeoLocationControl &&
+      map &&
+      !map.hasControl(geoLocateControl.current) &&
+      map.addControl(geoLocateControl.current, "bottom-right");
+  }, [isMapLoaded, hasGeoLocationControl, map]);
 
   useEffect(() => {
     if (map && peaks) {
