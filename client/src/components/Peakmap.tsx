@@ -23,6 +23,7 @@ interface IProps {
   noZoom?: boolean;
   interactive?: boolean;
   visible?: boolean;
+  hasGeoLocation?: boolean;
 }
 
 const tileQueryUrl =
@@ -45,6 +46,7 @@ const Peakmap = ({
   noZoom,
   interactive = true,
   visible = true,
+  hasGeoLocation,
 }: IProps) => {
   const { isAuthenticated } = useAuth0();
 
@@ -122,11 +124,11 @@ const Peakmap = ({
   }, [setMap, mapEl, interactive]);
 
   useEffect(() => {
-    if (bounds && isMapLoaded) {
+    if (bounds && isStyleLoaded) {
       map?.fitBounds(bounds, { duration: 0 });
       setIsBoundsFit(true);
     }
-  }, [map, bounds, isMapLoaded, setIsBoundsFit]);
+  }, [map, bounds, isStyleLoaded, setIsBoundsFit]);
 
   useEffect(() => {
     if (noZoom && isMapLoaded) map?.scrollZoom.disable();
