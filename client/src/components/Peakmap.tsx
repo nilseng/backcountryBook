@@ -129,6 +129,7 @@ const Peakmap = ({
           container: mapEl.current,
           style: "mapbox://styles/mapbox/outdoors-v10",
           zoom: 1,
+          center: [0, 40],
           maxBounds: [-200, -85, 200, 85],
           interactive,
         })
@@ -213,15 +214,14 @@ const Peakmap = ({
     } */
 
   useEffect(() => {
-    if (map && focusPeak && isMapLoaded && isStyleLoaded && peaks) {
+    if (map && focusPeak && isMapLoaded) {
       if (focusPeak?.lngLat) {
         map.setZoom(14);
         map.setCenter([focusPeak.lngLat.lng, focusPeak.lngLat.lat]);
-        if (!map.getSource("mapbox-dem")) toggle3D(map);
         //rotateCamera(0)
       }
     }
-  }, [map, isMapLoaded, isStyleLoaded, peaks, focusPeak]);
+  }, [map, isMapLoaded, focusPeak]);
 
   useEffect(() => {
     if (route && map && isStyleLoaded) {
@@ -257,10 +257,10 @@ const Peakmap = ({
     >
       {isAuthenticated && setPeak && (
         <div
-          className="bg-dark text-light position-absolute rounded p-2 m-2"
+          className="bg-dark text-light position-absolute rounded p-2 m-2 ml-5"
           style={{ zIndex: 999 }}
         >
-          Zoom in and click the map to add peak
+          Click to add peak
         </div>
       )}
     </div>
