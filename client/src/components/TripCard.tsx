@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
 import Card from "react-bootstrap/Card";
 import Carousel from "react-bootstrap/Carousel";
 import Image from "react-bootstrap/Image";
@@ -23,6 +24,7 @@ const routeMargin = 0.002;
 
 const TripCard = ({ trip, setTripToEdit, setShowModal }: IProps) => {
   const { user } = useAuth0();
+  const history = useHistory();
   const [date, setDate] = useState<string>();
   const [route, setRoute] = useState();
   const [bounds, setBounds] = useState<[number, number, number, number]>();
@@ -140,7 +142,12 @@ const TripCard = ({ trip, setTripToEdit, setShowModal }: IProps) => {
       )}
       {trip.peaks &&
         trip.peaks.map((peak, i) => (
-          <div key={i}>
+          <div
+            key={i}
+            className="my-1"
+            style={{ cursor: "pointer" }}
+            onClick={() => history.push(`/peaks?peakId=${peak._id}`)}
+          >
             <FaIcon icon={faMountain} className="ml-1" />
             <span className="small ml-1">{peak.name}</span>
             <span className="small ml-1">{peak.height?.toLocaleString()}m</span>

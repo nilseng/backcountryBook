@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import mapboxgl from "mapbox-gl";
-import { useLocation } from "react-router-dom";
 
 import { IPeak } from "../models/Peak";
 import Map3DControl from "../utils/Map3DControl";
@@ -15,6 +14,7 @@ interface IProps {
   peaks?: IPeak[];
   defaultPeak?: IPeak;
   setShowModal?: any;
+  focusPeak?: IPeak;
   route?: any;
   height?: string;
   width?: string;
@@ -33,15 +33,12 @@ const tileQueryUrl =
 const defaultHeight = "calc(100vh - 58px)";
 const defaultWidth = "vw-100";
 
-const useQuery = () => {
-  return new URLSearchParams(useLocation().search);
-};
-
 const Peakmap = ({
   setPeak,
   peaks,
   defaultPeak,
   setShowModal,
+  focusPeak,
   route,
   height,
   width,
@@ -54,14 +51,6 @@ const Peakmap = ({
   hasGeoLocationControl,
 }: IProps) => {
   const { isAuthenticated } = useAuth0();
-
-  const query = useQuery();
-  const [peakId, setPeakId] = useState<string>();
-
-  useEffect(() => {
-    const peakId = query.get("peakId");
-    if (peakId) setPeakId(peakId);
-  }, [query, peakId]);
 
   mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN || "";
 
@@ -224,16 +213,15 @@ const Peakmap = ({
     } */
 
   useEffect(() => {
-    if (map && peakId && isMapLoaded && isStyleLoaded && peaks) {
-      const peak = peaks.find((p) => p._id === peakId);
-      if (peak?.lngLat) {
+    if (map && focusPeak && isMapLoaded && isStyleLoaded && peaks) {
+      if (focusPeak?.lngLat) {
         map.setZoom(14);
-        map.setCenter([peak.lngLat.lng, peak.lngLat.lat]);
+        map.setCenter([focusPeak.lngLat.lng, focusPeak.lngLat.lat]);
         if (!map.getSource("mapbox-dem")) toggle3D(map);
         //rotateCamera(0)
       }
     }
-  }, [map, isMapLoaded, isStyleLoaded, peaks, peakId]);
+  }, [map, isMapLoaded, isStyleLoaded, peaks, focusPeak]);
 
   useEffect(() => {
     if (route && map && isStyleLoaded) {
