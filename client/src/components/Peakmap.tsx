@@ -58,7 +58,6 @@ const Peakmap = ({
   const [map, setMap] = useState<mapboxgl.Map>();
 
   const [isMapLoaded, setIsMapLoaded] = useState(false);
-  const [isStyleLoaded, setIsStyleLoaded] = useState(false);
 
   const peakMarker = useRef<mapboxgl.Marker>(
     new mapboxgl.Marker({ draggable: true })
@@ -138,11 +137,11 @@ const Peakmap = ({
   }, [setMap, mapEl, interactive]);
 
   useEffect(() => {
-    if (bounds && isStyleLoaded) {
+    if (bounds && isMapLoaded) {
       map?.fitBounds(bounds, { duration: 0 });
       setIsBoundsFit(true);
     }
-  }, [map, bounds, isStyleLoaded, setIsBoundsFit]);
+  }, [map, bounds, isMapLoaded, setIsBoundsFit]);
 
   useEffect(() => {
     if (noZoom && isMapLoaded) map?.scrollZoom.disable();
@@ -152,10 +151,6 @@ const Peakmap = ({
     if (map && mapEl.current) {
       map.on("load", () => {
         setIsMapLoaded(true);
-      });
-
-      map.on("style.load", () => {
-        setIsStyleLoaded(true);
       });
 
       _3d &&
@@ -224,7 +219,7 @@ const Peakmap = ({
   }, [map, isMapLoaded, focusPeak]);
 
   useEffect(() => {
-    if (route && map && isStyleLoaded) {
+    if (route && map && isMapLoaded) {
       const source = map.getSource("route");
       if (!source) map.addSource("route", { type: "geojson", data: route });
       if (!map.getLayer("route")) {
@@ -243,7 +238,7 @@ const Peakmap = ({
         });
       }
     }
-  }, [map, route, isStyleLoaded]);
+  }, [map, route, isMapLoaded]);
 
   return (
     <div
