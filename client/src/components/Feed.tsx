@@ -4,7 +4,7 @@ import { ITrip } from "../models/Trip";
 import TripCard from "./TripCard";
 
 interface IProps {
-  trips: ITrip[];
+  trips?: ITrip[];
   setTrip: any;
   setShowModal: any;
 }

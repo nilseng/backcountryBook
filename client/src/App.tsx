@@ -33,21 +33,25 @@ const App = () => {
       <Router history={history}>
         <NavBar setShowModal={setShowModal} />
         <Switch>
-          {trips && (
-            <Route
-              path="/"
-              exact
-              render={() => (
-                <Feed
-                  trips={trips}
-                  setTrip={setTrip}
-                  setShowModal={setShowModal}
-                />
-              )}
-            />
-          )}
+          <Route
+            path="/"
+            exact
+            render={() => (
+              <Feed
+                trips={trips}
+                setTrip={setTrip}
+                setShowModal={setShowModal}
+              />
+            )}
+          />
           <Route path="/peaks" component={Peaks} />
-          <PrivateRoute path="/profile" component={Profile} />
+          <PrivateRoute
+            path="/profile"
+            component={Profile}
+            trips={trips}
+            setTrip={setTrip}
+            setShowModal={setShowModal}
+          />
         </Switch>
       </Router>
       {trips && (
