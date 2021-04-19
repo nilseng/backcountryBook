@@ -19,7 +19,6 @@ interface IProps {
   height?: string;
   width?: string;
   bounds?: [number, number, number, number];
-  setIsBoundsFit?: any;
   _3d?: boolean;
   noZoom?: boolean;
   interactive?: boolean;
@@ -43,7 +42,6 @@ const Peakmap = ({
   height,
   width,
   bounds,
-  setIsBoundsFit,
   _3d,
   noZoom,
   interactive = true,
@@ -139,9 +137,8 @@ const Peakmap = ({
   useEffect(() => {
     if (bounds && isMapLoaded) {
       map?.fitBounds(bounds, { duration: 0 });
-      setIsBoundsFit(true);
     }
-  }, [map, bounds, isMapLoaded, setIsBoundsFit]);
+  }, [map, bounds, isMapLoaded]);
 
   useEffect(() => {
     if (noZoom && isMapLoaded) map?.scrollZoom.disable();

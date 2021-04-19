@@ -28,7 +28,6 @@ const TripCard = ({ trip, setTripToEdit, setShowModal }: IProps) => {
   const [date, setDate] = useState<string>();
   const [route, setRoute] = useState();
   const [bounds, setBounds] = useState<[number, number, number, number]>();
-  const [isBoundsFit, setIsBoundsFit] = useState(false);
   const [images, setImages] = useState<any[]>([]);
 
   const onEdit = () => {
@@ -134,10 +133,8 @@ const TripCard = ({ trip, setTripToEdit, setShowModal }: IProps) => {
           height="20rem"
           width="auto"
           bounds={bounds}
-          setIsBoundsFit={setIsBoundsFit}
           _3d={false}
           interactive={false}
-          visible={isBoundsFit}
         />
       )}
       {trip.peaks &&
