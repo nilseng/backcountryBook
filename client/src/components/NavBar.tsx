@@ -8,6 +8,7 @@ import {
   faBan,
   faKey,
   faPlus,
+  faMapMarked,
 } from "@fortawesome/free-solid-svg-icons";
 import { useAuth0 } from "@auth0/auth0-react";
 
@@ -42,8 +43,8 @@ const NavBar = ({ setShowModal }: IProps) => {
                 </Nav.Link>
               )}
               <Nav.Link href="/peaks" className="btn btn-sm text-light">
-                <FaIcon icon={faMountain} className="mr-2"></FaIcon>
-                Peaks
+                <FaIcon icon={faMapMarked} className="mr-2"></FaIcon>
+                Map
               </Nav.Link>
               {isAuthenticated && (
                 <>
