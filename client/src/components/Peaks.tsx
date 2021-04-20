@@ -6,11 +6,14 @@ import Loading from "./Loading";
 import PeakModal from "./PeakModal";
 import Peakmap from "./Peakmap";
 import { useLocation } from "react-router-dom";
+import { getBounds, getRoute } from "../services/routeService";
 
 const defaultPeak: IPeak = {
   name: "",
   height: undefined,
 };
+
+const routeMargin = 0.02;
 
 const Peaks = () => {
   const [isLoadingPeaks, setIsLoadingPeaks] = useState(false);
@@ -21,6 +24,10 @@ const Peaks = () => {
   const [showModal, setShowModal] = useState(false);
 
   const [focusPeak, setFocusPeak] = useState<IPeak>();
+
+  const [routeId, setRouteId] = useState<string>();
+  const [focusRoute, setFocusRoute] = useState<any>();
+  const [bounds, setBounds] = useState<[number, number, number, number]>();
 
   useEffect(() => {
     setIsLoadingPeaks(true);
@@ -55,6 +62,32 @@ const Peaks = () => {
     }
   }, [peakId, peaks]);
 
+  useEffect(() => {
+    if (query) {
+      const routeId = query.get("routeId");
+      if (routeId) setRouteId(routeId);
+    }
+  }, [query, routeId]);
+
+  useEffect(() => {
+    if (routeId) {
+      getRoute(routeId)
+        .then((res) => {
+          const boundsObject = getBounds(
+            res?.features[0]?.geometry?.coordinates
+          );
+          setBounds([
+            boundsObject.xMin - routeMargin,
+            boundsObject.yMin - routeMargin,
+            boundsObject.xMax + routeMargin,
+            boundsObject.yMax + routeMargin,
+          ]);
+          setFocusRoute(res);
+        })
+        .catch((e) => console.error(e));
+    }
+  }, [routeId]);
+
   if (isLoadingPeaks)
     return (
       <div className="bg-dark vh-100">
@@ -70,6 +103,8 @@ const Peaks = () => {
         defaultPeak={defaultPeak}
         setShowModal={setShowModal}
         focusPeak={focusPeak}
+        route={focusRoute}
+        bounds={bounds}
         _3d={true}
         hasGeoLocationControl={true}
       />

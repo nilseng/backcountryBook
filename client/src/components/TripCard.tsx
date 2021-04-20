@@ -128,14 +128,19 @@ const TripCard = ({ trip, setTripToEdit, setShowModal }: IProps) => {
         ) : null}
       </div>
       {route && (
-        <Peakmap
-          route={route}
-          height="20rem"
-          width="auto"
-          bounds={bounds}
-          _3d={false}
-          interactive={false}
-        />
+        <div
+          style={{ cursor: "pointer" }}
+          onClick={() => history.push(`/peaks?routeId=${trip.routeId}`)}
+        >
+          <Peakmap
+            route={route}
+            height="20rem"
+            width="auto"
+            bounds={bounds}
+            _3d={false}
+            interactive={false}
+          />
+        </div>
       )}
       {trip.peaks &&
         trip.peaks.map((peak, i) => (
