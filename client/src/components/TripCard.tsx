@@ -51,13 +51,15 @@ const TripCard = ({ trip, setTripToEdit, setShowModal }: IProps) => {
           ]);
           setRoute(res);
         } catch (e) {
-          console.error("Failed setting route.");
+          console.error(
+            `Failed setting route for trip w id ${trip._id} and name ${trip.name}.`
+          );
         }
       });
     } else {
       setRoute(undefined);
     }
-  }, [trip.routeId]);
+  }, [trip]);
 
   useEffect(() => {
     if (trip.imageIds && trip.imageIds.length > 0) {

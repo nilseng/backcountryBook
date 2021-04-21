@@ -49,7 +49,7 @@ export const getBounds = (coordinates: [number, number, number][]) => {
     let bounds: { xMin: number, xMax: number, yMin: number, yMax: number }, longitude: number, latitude: number
     bounds = { xMin: coordinates[0][0], xMax: coordinates[0][0], yMin: coordinates[0][1], yMax: coordinates[0][1] }
 
-    for (var i = 0; i < coordinates.length; i++) {
+    for (let i = 0; i < coordinates.length; i++) {
         longitude = coordinates[i][0];
         latitude = coordinates[i][1];
 
