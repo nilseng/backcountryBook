@@ -38,7 +38,7 @@ const TripCard = ({ trip, setTripToEdit, setShowModal }: IProps) => {
   useEffect(() => {
     if (trip.routeId) {
       getRoute(trip.routeId).then((res) => {
-        if (!res?.features) return;
+        if (!res?.features || res.features[0].geometry?.coordinates) return;
         try {
           const boundsObject = getBounds(
             res?.features[0]?.geometry?.coordinates
