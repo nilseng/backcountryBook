@@ -38,6 +38,7 @@ const TripCard = ({ trip, setTripToEdit, setShowModal }: IProps) => {
   useEffect(() => {
     if (trip.routeId) {
       getRoute(trip.routeId).then((res) => {
+        if (!res?.features) return;
         const boundsObject = getBounds(res?.features[0]?.geometry?.coordinates);
         setBounds([
           boundsObject.xMin - routeMargin,
@@ -47,6 +48,8 @@ const TripCard = ({ trip, setTripToEdit, setShowModal }: IProps) => {
         ]);
         setRoute(res);
       });
+    } else {
+      setRoute(undefined);
     }
   }, [trip.routeId]);
 

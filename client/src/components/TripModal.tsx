@@ -22,7 +22,13 @@ import { searchPeaks } from "../services/peakService";
 import { IPeak } from "../models/Peak";
 import { Badge, InputGroup } from "react-bootstrap";
 import { convertToDateInputFormat } from "../utils/dateFunctions";
-import { getBounds, gpxToGeojson, saveRoute } from "../services/routeService";
+import {
+  deleteRoute,
+  getBounds,
+  getRoute,
+  gpxToGeojson,
+  saveRoute,
+} from "../services/routeService";
 import Peakmap from "./Peakmap";
 
 interface IProps {
@@ -35,6 +41,8 @@ interface IProps {
   setTrips: any;
 }
 
+const mapMargin = 0.002;
+
 const TripModal = ({
   trip,
   setTrip,
@@ -46,10 +54,30 @@ const TripModal = ({
   const { isLoading, user, getIdTokenClaims } = useAuth0();
 
   const [searchedPeaks, setSearchedPeaks] = useState<IPeak[]>([]);
+
   const [geojson, setGeojson] = useState<any>();
   const [bounds, setBounds] = useState<[number, number, number, number]>();
+  const [removedRouteId, setRemovedRouteId] = useState<string>();
+
   const [files, setFiles] = useState<any[]>();
   const [isSaving, setIsSaving] = useState(false);
+
+  const onShow = async () => {
+    if (trip?.routeId && !geojson) {
+      const route = await getRoute(trip.routeId).catch((e) =>
+        console.log("Could not fetch route.")
+      );
+      if (!route?.features) return;
+      setGeojson(route);
+      const bounds = getBounds(route?.features[0]?.geometry?.coordinates);
+      setBounds([
+        bounds.xMin - mapMargin,
+        bounds.yMin - mapMargin,
+        bounds.xMax + mapMargin,
+        bounds.yMax + mapMargin,
+      ]);
+    }
+  };
 
   const handleSearch = (e: any) => {
     const searchTerm = e.target.value;
@@ -98,13 +126,17 @@ const TripModal = ({
         ? await saveTrip(token, {
             ...trip,
             imageIds: [...trip.imageIds, ...imageIds],
-            routeId,
+            routeId: routeId,
           })
-        : await saveTrip(token, { ...trip, routeId });
+        : await saveTrip(token, { ...trip, routeId: routeId });
       setTrips((trips: ITrip[]) => [
         { ...savedTrip, user, peaks },
         ...trips.filter((t) => t._id !== savedTrip._id),
       ]);
+      if (removedRouteId) {
+        // Not using await here since modal can close before route is deleted.
+        deleteRoute(token, removedRouteId);
+      }
     }
     setIsSaving(false);
     handleClose();
@@ -138,7 +170,12 @@ const TripModal = ({
     const res = await gpxToGeojson(token, Array.from(files)[0]);
     setGeojson(res);
     const bounds = getBounds(res?.features[0]?.geometry?.coordinates);
-    setBounds([bounds.xMin, bounds.yMin, bounds.xMax, bounds.yMax]);
+    setBounds([
+      bounds.xMin - mapMargin,
+      bounds.yMin - mapMargin,
+      bounds.xMax + mapMargin,
+      bounds.yMax + mapMargin,
+    ]);
   };
 
   const handleImageChange = (files: any[]) => {
@@ -146,8 +183,14 @@ const TripModal = ({
   };
 
   const saveGeojson = async (token: IdToken) => {
-    if (!(token && trip && geojson)) return;
+    if (!(token && trip && geojson)) return null;
     return await saveRoute(token, geojson);
+  };
+
+  const removeRoute = () => {
+    if (trip.routeId) setRemovedRouteId(trip.routeId);
+    setTrip({ ...trip, routeId: undefined });
+    setGeojson(undefined);
   };
 
   const saveImages = async (token: IdToken) => {
@@ -176,6 +219,7 @@ const TripModal = ({
     <Modal
       id="tripModal"
       show={showModal}
+      onShow={onShow}
       onHide={handleClose}
       animation={false}
     >
@@ -218,29 +262,42 @@ const TripModal = ({
                 </InputGroup>
               </Col>
             </Form.Row>
-            <Peakmap
-              route={geojson}
-              height="20rem"
-              width="auto"
-              bounds={bounds}
-              _3d={false}
-            />
-            <Form.Group className="mt-2">
-              <Form.File custom>
-                <Form.File.Input
-                  accept="application/gpx+xml"
-                  onChange={async (e: any) =>
-                    await handleGpxChange(e.target.files)
-                  }
+            {geojson && (
+              <div>
+                <FaIcon
+                  icon={faTimes}
+                  className="h4 text-dark position-absolute mr-2 mt-2"
+                  style={{ zIndex: 10000, cursor: "pointer", right: "1rem" }}
+                  onClick={removeRoute}
                 />
-                <Form.File.Label
-                  data-browse="Select GPX file"
-                  className="small bg-secondary text-light border-dark"
-                >
-                  Upload a GPX file to see your route on the map.
-                </Form.File.Label>
-              </Form.File>
-            </Form.Group>
+                <Peakmap
+                  route={geojson}
+                  height="20rem"
+                  width="auto"
+                  bounds={bounds}
+                  _3d={false}
+                  interactive={false}
+                />
+              </div>
+            )}
+            {!trip.routeId && (
+              <Form.Group className="mt-2">
+                <Form.File custom>
+                  <Form.File.Input
+                    accept="application/gpx+xml"
+                    onChange={async (e: any) =>
+                      await handleGpxChange(e.target.files)
+                    }
+                  />
+                  <Form.File.Label
+                    data-browse="Select GPX file"
+                    className="small bg-secondary text-light border-dark"
+                  >
+                    Upload a GPX file to see your route on the map.
+                  </Form.File.Label>
+                </Form.File>
+              </Form.Group>
+            )}
             <div className="image-container">
               {files && files.length > 0 && (
                 <Carousel className="h-100">

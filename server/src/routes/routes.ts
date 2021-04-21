@@ -46,6 +46,18 @@ router.post("/route", checkJwt, (req: any, res: any) => {
   });
 });
 
+router.delete("/route/:routeId", async (req: any, res: any) => {
+  if (!req.params.routeId) return res.status(400).json("Missing route id");
+  const params = {
+    Bucket: s3Bucket,
+    Key: req.params.routeId,
+  };
+  s3.deleteObject(params, (err: any, data: any) => {
+    if (err) res.status(400).json("Could not delete geojson.")
+    else res.status(200).json("Geojson deleted.")
+  })
+})
+
 router.post(
   "/route/gpxtogeojson",
   checkJwt,

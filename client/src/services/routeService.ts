@@ -22,6 +22,16 @@ export const saveRoute = async (token: IdToken, geojson: any) => {
     return geojsonId;
 }
 
+export const deleteRoute = async (token: IdToken, routeId: string) => {
+    await fetch(`/api/route/${routeId}`, {
+        headers: {
+            authorization: `Bearer ${token.__raw}`,
+            'Content-Type': 'application/json',
+        },
+        method: "DELETE"
+    }).catch(_ => console.error('Could not delete route.'))
+}
+
 export const gpxToGeojson = async (token: IdToken, gpx: any) => {
     const formData = new FormData()
     formData.append("gpx", gpx)
