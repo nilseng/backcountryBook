@@ -162,6 +162,7 @@ const TripModal = ({
     setBounds(undefined);
     setFiles(undefined);
     setSearchedPeaks([]);
+    setRemovedRouteId(undefined);
   };
 
   const handleGpxChange = async (files: any[]) => {
@@ -227,6 +228,12 @@ const TripModal = ({
       {!isSaving && (
         <>
           <Modal.Body className="bg-dark text-light">
+            <FaIcon
+              icon={faTimes}
+              className="float-right"
+              style={{ zIndex: 10000, cursor: "pointer", right: "1rem" }}
+              onClick={handleClose}
+            />
             <Form.Group>
               <Form.Label>Name</Form.Label>
               <Form.Control
