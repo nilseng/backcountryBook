@@ -392,12 +392,10 @@ const TripModal = ({
           </Modal.Body>
           <Modal.Footer className="bg-dark text-light border-0">
             <Button variant="secondary" onClick={() => onDiscard()}>
-              Delete
-              <FaIcon icon={faTrash} className="ml-1" />
+              <FaIcon icon={faTrash} />
             </Button>
             <Button onClick={() => onSave()}>
-              Save
-              <FaIcon icon={faCheck} className="ml-1" />
+              <FaIcon icon={faCheck} />
             </Button>
           </Modal.Footer>
         </>
