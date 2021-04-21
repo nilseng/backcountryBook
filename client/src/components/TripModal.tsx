@@ -169,6 +169,7 @@ const TripModal = ({
     if (!files || Array.from(files)?.length === 0) return;
     const token = await getIdTokenClaims();
     const res = await gpxToGeojson(token, Array.from(files)[0]);
+    if (!res?.features || !res.features[0]?.geometry?.coordinates) return;
     setGeojson(res);
     const bounds = getBounds(res?.features[0]?.geometry?.coordinates);
     setBounds([
