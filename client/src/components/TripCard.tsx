@@ -39,14 +39,20 @@ const TripCard = ({ trip, setTripToEdit, setShowModal }: IProps) => {
     if (trip.routeId) {
       getRoute(trip.routeId).then((res) => {
         if (!res?.features) return;
-        const boundsObject = getBounds(res?.features[0]?.geometry?.coordinates);
-        setBounds([
-          boundsObject.xMin - routeMargin,
-          boundsObject.yMin - routeMargin,
-          boundsObject.xMax + routeMargin,
-          boundsObject.yMax + routeMargin,
-        ]);
-        setRoute(res);
+        try {
+          const boundsObject = getBounds(
+            res?.features[0]?.geometry?.coordinates
+          );
+          setBounds([
+            boundsObject.xMin - routeMargin,
+            boundsObject.yMin - routeMargin,
+            boundsObject.xMax + routeMargin,
+            boundsObject.yMax + routeMargin,
+          ]);
+          setRoute(res);
+        } catch (e) {
+          console.error("Failed setting route.");
+        }
       });
     } else {
       setRoute(undefined);
