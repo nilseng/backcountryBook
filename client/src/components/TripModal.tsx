@@ -8,7 +8,6 @@ import ListGroup from "react-bootstrap/ListGroup";
 import Col from "react-bootstrap/Col";
 import { FontAwesomeIcon as FaIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faTimes, faTrash } from "@fortawesome/free-solid-svg-icons";
-import { v4 as uuid } from "uuid";
 import { IdToken, useAuth0 } from "@auth0/auth0-react";
 import { debounce } from "lodash";
 
@@ -30,7 +29,11 @@ import {
   saveRoute,
 } from "../services/routeService";
 import Peakmap from "./Peakmap";
-import { getImageBlobs } from "../services/imageService";
+import {
+  deleteImages,
+  getImageBlobs,
+  saveImages,
+} from "../services/imageService";
 
 interface IProps {
   trip: ITrip;
@@ -60,7 +63,9 @@ const TripModal = ({
   const [bounds, setBounds] = useState<[number, number, number, number]>();
   const [removedRouteId, setRemovedRouteId] = useState<string>();
 
-  const [files, setFiles] = useState<any[]>();
+  const [files, setFiles] = useState<{ id?: string; blob: Blob }[]>();
+  const [removedImageIds, setRemovedImagesIds] = useState<string[]>([]);
+
   const [isSaving, setIsSaving] = useState(false);
 
   const onShow = async () => {
@@ -124,8 +129,9 @@ const TripModal = ({
     setIsSaving(true);
     if (trip) {
       const token = await getIdTokenClaims();
-      const routeId = await saveGeojson(token);
-      const imageIds = await saveImages(token);
+      let routeId;
+      if (!trip.routeId) routeId = await saveGeojson(token);
+      const imageIds = await storeImages(token);
       const peaks = trip.peaks ? [...trip.peaks] : [];
       const savedTrip = imageIds
         ? await saveTrip(token, {
@@ -141,6 +147,10 @@ const TripModal = ({
       if (removedRouteId) {
         // Not using await here since modal can close before route is deleted.
         deleteRoute(token, removedRouteId);
+      }
+      if (removedImageIds?.length > 0) {
+        // Not using await here since modal can close before images are deleted.
+        deleteImages(token, removedImageIds);
       }
     }
     setIsSaving(false);
@@ -168,6 +178,7 @@ const TripModal = ({
     setFiles(undefined);
     setSearchedPeaks([]);
     setRemovedRouteId(undefined);
+    setRemovedImagesIds([]);
   };
 
   const handleGpxChange = async (files: any[]) => {
@@ -185,8 +196,8 @@ const TripModal = ({
     ]);
   };
 
-  const handleImageChange = (files: any[]) => {
-    setFiles(Array.from(files));
+  const handleImageChange = (files: Blob[]) => {
+    setFiles(Array.from(files).map((file) => ({ blob: file })));
   };
 
   const saveGeojson = async (token: IdToken) => {
@@ -200,24 +211,21 @@ const TripModal = ({
     setGeojson(undefined);
   };
 
-  const saveImages = async (token: IdToken) => {
+  const storeImages = async (token: IdToken) => {
     if (!(token && trip && files)) return;
-    const formData = new FormData();
-    const imageIds = [];
-    for (const image of Array.from(files)) {
-      formData.append("images", image);
-      const imageId = uuid();
-      imageIds.push(imageId);
-      formData.append("imageIds", imageId);
-    }
-    await fetch("/api/image", {
-      headers: {
-        authorization: `Bearer ${token.__raw}`,
-      },
-      method: "POST",
-      body: formData,
-    });
+    const imageIds = await saveImages(token, files);
     return imageIds;
+  };
+
+  const removeImage = (file: { id?: string; blob: Blob }, i: number) => {
+    setFiles(files?.filter((_, j) => j !== i));
+    if (file.id) {
+      setRemovedImagesIds([...removedImageIds, file.id]);
+      setTrip({
+        ...trip,
+        imageIds: trip.imageIds.filter((id) => id !== file.id),
+      });
+    }
   };
 
   if (isLoading) return null;
@@ -311,19 +319,29 @@ const TripModal = ({
                 </Form.File>
               </Form.Group>
             )}
+
             <div className="image-container">
               {files && files.length > 0 && (
                 <Carousel className="h-100">
                   {files.map((file, i) => (
-                    <Carousel.Item key={file.name || i}>
+                    <Carousel.Item
+                      key={file.id || (file.blob as any).name || i}
+                    >
+                      <FaIcon
+                        icon={faTimes}
+                        className="h4 text-dark position-absolute mr-2 mt-2"
+                        style={{
+                          zIndex: 10000,
+                          cursor: "pointer",
+                          right: "1rem",
+                        }}
+                        onClick={() => removeImage(file, i)}
+                      />
                       <Image
                         className="preview-image"
-                        src={URL.createObjectURL(file)}
+                        src={URL.createObjectURL(file.blob)}
                         rounded
                       />
-                      <Carousel.Caption>
-                        <p>{files.length} image(s) selected.</p>
-                      </Carousel.Caption>
                     </Carousel.Item>
                   ))}
                 </Carousel>

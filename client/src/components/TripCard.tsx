@@ -72,6 +72,8 @@ const TripCard = ({ trip, setTripToEdit, setShowModal }: IProps) => {
           if (length === trip.imageIds.length) setImages(imgs);
         });
       }
+    } else {
+      setImages([]);
     }
   }, [trip.imageIds]);
 

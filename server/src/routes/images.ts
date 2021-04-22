@@ -51,4 +51,21 @@ router.post("/image", checkJwt, upload.array("images"), async (req, res) => {
     }
 });
 
+router.delete("/images", checkJwt, async (req, res) => {
+    const body = req.body
+    if (!body || !body.imageIds || body.imageIds.length === 0) return res.status(400).json({ error: "No image ids in request" })
+    const params: any = {
+        Bucket: req.body.bucket ? req.body.bucket : defaultBucket,
+        Delete: {
+            Objects: body.imageIds.map((id: string) => ({ Key: id }))
+            ,
+            Quiet: false
+        }
+    };
+    s3.deleteObjects(params, (err: any, data: any) => {
+        if (err) return res.status(400).json({ error: err })
+        else res.status(200).json(`${body.imageIds.length} images deleted`)
+    })
+})
+
 export default router
