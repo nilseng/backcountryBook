@@ -162,6 +162,8 @@ const TripModal = ({
     if (trip?._id) {
       try {
         await deleteTrip(token, trip);
+        if (trip.routeId) deleteRoute(token, trip.routeId);
+        if (trip.imageIds?.length > 0) deleteImages(token, trip.imageIds);
         setTrips((trips: ITrip[]) => trips.filter((t) => t._id !== trip._id));
       } catch (e) {
         console.log(`Something went wrong: ${e}`);
