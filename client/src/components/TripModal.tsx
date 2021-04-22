@@ -30,6 +30,7 @@ import {
   saveRoute,
 } from "../services/routeService";
 import Peakmap from "./Peakmap";
+import { getImageBlobs } from "../services/imageService";
 
 interface IProps {
   trip: ITrip;
@@ -76,6 +77,10 @@ const TripModal = ({
         bounds.xMax + mapMargin,
         bounds.yMax + mapMargin,
       ]);
+    }
+    if (trip?.imageIds?.length > 0 && !files) {
+      const imageBlobs = await getImageBlobs(trip.imageIds);
+      setFiles(imageBlobs);
     }
   };
 
@@ -309,8 +314,8 @@ const TripModal = ({
             <div className="image-container">
               {files && files.length > 0 && (
                 <Carousel className="h-100">
-                  {files.map((file) => (
-                    <Carousel.Item key={file.name}>
+                  {files.map((file, i) => (
+                    <Carousel.Item key={file.name || i}>
                       <Image
                         className="preview-image"
                         src={URL.createObjectURL(file)}
