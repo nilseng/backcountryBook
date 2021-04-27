@@ -57,10 +57,6 @@ const Peakmap = ({
 
   const [isMapLoaded, setIsMapLoaded] = useState(false);
 
-  const peakMarker = useRef<mapboxgl.Marker>(
-    new mapboxgl.Marker({ draggable: true })
-  );
-
   const _3DControl = useRef<Map3DControl>(new Map3DControl());
   const geoLocateControl = useRef<mapboxgl.GeolocateControl>(
     new mapboxgl.GeolocateControl({
@@ -157,19 +153,6 @@ const Peakmap = ({
               map.addControl(_3DControl.current);
               _3DControl.current.on("click", () => toggle3D(map));
             }
-            map.on("click", async (e) => {
-              if (!isAuthenticated) return;
-              if (e.lngLat) {
-                peakMarker.current.setLngLat(e.lngLat).addTo(map);
-                const elevation = await getElevation(e);
-                setPeak({
-                  ...defaultPeak,
-                  lngLat: e.lngLat,
-                  height: elevation,
-                });
-                setShowModal(true);
-              }
-            });
           } else {
             if (map.hasControl(_3DControl.current)) {
               map.removeControl(_3DControl.current);
@@ -178,6 +161,23 @@ const Peakmap = ({
         });
     }
   }, [mapEl, map, defaultPeak, setPeak, setShowModal, isAuthenticated, _3d]);
+
+  useEffect(() => {
+    if (map && isMapLoaded) {
+      map.on("click", async (e) => {
+        if (!isAuthenticated) return;
+        if (e.lngLat) {
+          const elevation = await getElevation(e);
+          setPeak({
+            ...defaultPeak,
+            lngLat: e.lngLat,
+            height: elevation,
+          });
+          setShowModal(true);
+        }
+      });
+    }
+  }, [map, isMapLoaded, isAuthenticated, defaultPeak, setPeak, setShowModal]);
 
   useEffect(() => {
     hasGeoLocationControl &&

@@ -10,15 +10,19 @@ import { useAuth0 } from "@auth0/auth0-react";
 
 interface IProps {
   peak: IPeak;
-  setPeak: any;
+  setPeak: Function;
+  peaks: IPeak[];
+  setPeaks: Function;
   defaultPeak: IPeak;
   showModal: boolean;
-  setShowModal: any;
+  setShowModal: Function;
 }
 
 const PeakModal = ({
   peak,
   setPeak,
+  peaks,
+  setPeaks,
   defaultPeak,
   showModal,
   setShowModal,
@@ -38,6 +42,7 @@ const PeakModal = ({
   const onSave = async () => {
     const token = await getIdTokenClaims();
     await savePeak(token, peak);
+    setPeaks([...peaks, peak]);
     handleHide();
   };
 
@@ -59,6 +64,7 @@ const PeakModal = ({
           <Form.Control
             name="name"
             type="text"
+            size="sm"
             value={peak.name}
             onChange={handleInputChange}
             className="small bg-secondary text-light border-dark"
@@ -80,9 +86,10 @@ const PeakModal = ({
           <Form.Control
             name="height"
             type="number"
+            size="sm"
             value={!peak.height && peak.height !== 0 ? "" : peak.height}
             onChange={handleInputChange}
-            className="small bg-secondary text-light border-dark"
+            className="bg-secondary text-light border-dark"
           ></Form.Control>
           <Form.Text className="text-muted">
             Peak elevation retrieved from the map is often inaccurate. Feel free

@@ -257,7 +257,6 @@ const TripModal = ({
                 value={trip.name}
                 onChange={(e) => setTrip({ ...trip, name: e.target.value })}
                 className="bg-secondary text-light border-0"
-                style={{ minHeight: "1.5rem" }}
               ></Form.Control>
             </Form.Group>
             <Form.Row className="mb-2">
@@ -329,17 +328,16 @@ const TripModal = ({
                 </Form.File>
               </Form.Group>
             )}
-
             <div className="image-container">
               {files && files.length > 0 && (
-                <Carousel className="h-100">
+                <Carousel interval={null} className="h-100">
                   {files.map((file, i) => (
                     <Carousel.Item
                       key={file.id || (file.blob as any).name || i}
                     >
                       <FaIcon
                         icon={faTimes}
-                        className="h4 text-dark position-absolute mr-2 mt-2"
+                        className="text-light position-absolute mt-2"
                         style={{
                           zIndex: 10000,
                           cursor: "pointer",

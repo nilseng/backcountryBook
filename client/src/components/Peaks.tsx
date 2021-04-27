@@ -111,6 +111,8 @@ const Peaks = () => {
       <PeakModal
         peak={peak}
         setPeak={setPeak}
+        peaks={peaks}
+        setPeaks={setPeaks}
         defaultPeak={defaultPeak}
         showModal={showModal}
         setShowModal={setShowModal}
