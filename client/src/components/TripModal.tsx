@@ -251,19 +251,25 @@ const TripModal = ({
               onClick={handleClose}
             />
             <Form.Group>
-              <Form.Label>Name</Form.Label>
+              <Form.Label>Title</Form.Label>
               <Form.Control
                 size="sm"
                 value={trip.name}
                 onChange={(e) => setTrip({ ...trip, name: e.target.value })}
                 className="bg-secondary text-light border-0"
+                style={{ minHeight: "1.5rem" }}
               ></Form.Control>
             </Form.Group>
             <Form.Row className="mb-2">
               <Col sm={8}>
                 <InputGroup size="sm">
                   <InputGroup.Prepend>
-                    <InputGroup.Text className="small">Date</InputGroup.Text>
+                    <InputGroup.Text
+                      className="small mb-2"
+                      style={{ minHeight: "1.5rem" }}
+                    >
+                      Date
+                    </InputGroup.Text>
                   </InputGroup.Prepend>
                   <Form.Control
                     size="sm"
@@ -280,7 +286,8 @@ const TripModal = ({
                         tripDate: Date.parse(e.target.value),
                       })
                     }
-                    className="bg-secondary text-light border-0"
+                    className="bg-secondary text-light border-0 mb-2"
+                    style={{ minHeight: "1.5rem" }}
                   ></Form.Control>
                 </InputGroup>
               </Col>
@@ -315,8 +322,9 @@ const TripModal = ({
                   <Form.File.Label
                     data-browse="Select GPX file"
                     className="small bg-secondary text-light border-dark"
+                    style={{ minHeight: "1.5rem" }}
                   >
-                    Upload a GPX file to see your route on the map.
+                    Upload your route here.
                   </Form.File.Label>
                 </Form.File>
               </Form.Group>
@@ -362,6 +370,7 @@ const TripModal = ({
                 <Form.File.Label
                   data-browse="Select images"
                   className="small bg-secondary text-light border-dark"
+                  style={{ minHeight: "1.5rem" }}
                 >
                   Upload images from the trip!
                 </Form.File.Label>
@@ -387,6 +396,7 @@ const TripModal = ({
                 placeholder="Search peaks..."
                 size="sm"
                 className="bg-secondary text-light border-0"
+                style={{ minHeight: "1.5rem" }}
                 onChange={(e) => handleSearch(e)}
               ></Form.Control>
               <ListGroup>
@@ -394,6 +404,7 @@ const TripModal = ({
                   <ListGroup.Item
                     key={peak._id}
                     className="bg-secondary small py-0"
+                    style={{ minHeight: "1.5rem" }}
                   >
                     <Button variant="secondary" onClick={() => addPeak(peak)}>
                       {peak.name}
@@ -413,6 +424,7 @@ const TripModal = ({
                 as="textarea"
                 rows={3}
                 className="small bg-secondary text-light border-dark"
+                style={{ minHeight: "1.5rem" }}
               />
             </Form.Group>
           </Modal.Body>
