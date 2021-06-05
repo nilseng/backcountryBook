@@ -9,6 +9,7 @@ import {
   faKey,
   faPlus,
   faMapMarked,
+  faBars,
 } from "@fortawesome/free-solid-svg-icons";
 import { useAuth0 } from "@auth0/auth0-react";
 
@@ -42,6 +43,10 @@ const NavBar = ({ setShowModal }: IProps) => {
                   <FaIcon icon={faPlus} className="mr-2"></FaIcon>Add trip
                 </Nav.Link>
               )}
+              <Nav.Link href="/feed" className="btn btn-sm text-light">
+                <FaIcon icon={faBars} className="mr-2"></FaIcon>
+                Feed
+              </Nav.Link>
               <Nav.Link href="/peaks" className="btn btn-sm text-light">
                 <FaIcon icon={faMapMarked} className="mr-2"></FaIcon>
                 Map

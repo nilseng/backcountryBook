@@ -17,7 +17,7 @@ export const Welcome = () => {
         className="d-flex align-items-center justify-content-center"
         style={{ minHeight: "80vh" }}
       >
-        <Card bg="dark" className="p-4">
+        <Card className="welcome-card p-4">
           <p className="display-4 font-weight-light">
             The place to explore and share skiing experiences
           </p>

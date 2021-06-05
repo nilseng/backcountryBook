@@ -1,3 +1,9 @@
 .bg-storebjorn {
   background: center / cover url(../images/storebjorn.jpeg);
 }
+
+.card.welcome-card {
+  background-color: rgba(53, 59, 65, 0.8);
+  border: none;
+  border-radius: 0;
+}
