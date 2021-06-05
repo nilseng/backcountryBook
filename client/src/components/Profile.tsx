@@ -20,7 +20,7 @@ const Profile = ({ trips, setTrip, setShowModal }: IProps) => {
   const [userTrips, setUserTrips] = useState<ITrip[]>();
 
   useEffect(() => {
-    if (user) {
+    if (user?.sub) {
       getUser(user.sub)
         .then((res) => setMergedUser({ ...res, user }))
         .catch((e) => setMergedUser(user));
