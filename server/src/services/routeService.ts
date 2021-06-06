@@ -1,6 +1,9 @@
 import aws from "aws-sdk";
+// @ts-ignore
+// eslint-disable-next-line import/no-webpack-loader-syntax
 const mbxClient = require('@mapbox/mapbox-sdk');
-
+// @ts-ignore
+// eslint-disable-next-line import/no-webpack-loader-syntax
 import mbxUploads from '@mapbox/mapbox-sdk/services/uploads';
 const baseClient = mbxClient({ accessToken: process.env.MAPBOX_UPLOAD_TOKEN });
 const uploadsClient = mbxUploads(baseClient)
