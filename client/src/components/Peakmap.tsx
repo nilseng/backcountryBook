@@ -7,7 +7,10 @@ import { useAuth0 } from "@auth0/auth0-react";
 
 // @ts-ignore
 // eslint-disable-next-line import/no-webpack-loader-syntax
-mapboxgl.workerClass = require("worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker").default;
+mapboxgl.workerClass =
+  // @ts-ignore
+  // eslint-disable-next-line import/no-webpack-loader-syntax
+  require("worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker").default;
 
 interface IProps {
   setPeak?: any;
@@ -135,6 +138,29 @@ const Peakmap = ({
       map?.fitBounds(bounds, { duration: 0 });
     }
   }, [map, bounds, isMapLoaded]);
+
+  useEffect(() => {
+    if (isMapLoaded && map) {
+      map?.addSource("nilseng.8e4aa944bf794233a5e29013fb28454c", {
+        type: "vector",
+        url: "mapbox://nilseng.8e4aa944bf794233a5e29013fb28454c",
+      });
+      map?.addLayer({
+        id: "nilseng.8e4aa944bf794233a5e29013fb28454c",
+        type: "line",
+        source: "nilseng.8e4aa944bf794233a5e29013fb28454c",
+        "source-layer": "tracks",
+        layout: {
+          "line-join": "round",
+          "line-cap": "round",
+        },
+        paint: {
+          "line-color": "#ff69b4",
+          "line-width": 1,
+        },
+      });
+    }
+  }, [isMapLoaded, map]);
 
   useEffect(() => {
     if (noZoom && isMapLoaded) map?.scrollZoom.disable();

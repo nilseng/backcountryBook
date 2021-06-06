@@ -10,6 +10,7 @@ import { FontAwesomeIcon as FaIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faTimes, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { IdToken, useAuth0 } from "@auth0/auth0-react";
 import { debounce } from "lodash";
+import { v4 as uuid } from "uuid";
 
 import ImagePlaceholder from "./ImagePlaceholder";
 import { ITrip } from "../models/Trip";
@@ -26,7 +27,8 @@ import {
   getBounds,
   getRoute,
   gpxToGeojson,
-  saveRoute,
+  saveGeojson,
+  saveGpx,
 } from "../services/routeService";
 import Peakmap from "./Peakmap";
 import {
@@ -59,6 +61,7 @@ const TripModal = ({
 
   const [searchedPeaks, setSearchedPeaks] = useState<IPeak[]>([]);
 
+  const [gpx, setGpx] = useState<any>();
   const [geojson, setGeojson] = useState<any>();
   const [bounds, setBounds] = useState<[number, number, number, number]>();
   const [removedRouteId, setRemovedRouteId] = useState<string>();
@@ -130,7 +133,15 @@ const TripModal = ({
     if (trip) {
       const token = await getIdTokenClaims();
       let routeId;
-      if (!trip.routeId) routeId = await saveGeojson(token);
+      if (gpx) {
+        routeId = uuid().replaceAll("-", "");
+        const res: any = await Promise.all([
+          saveGeojson(token, geojson, routeId),
+          saveGpx(token, gpx, routeId),
+        ]).catch((e) => ({ error: "saving route failed" }));
+        //TODO: Surface errors to user instead of just early return
+        if (res?.error) return;
+      }
       const imageIds = await storeImages(token);
       const peaks = trip.peaks ? [...trip.peaks] : [];
       const savedTrip = imageIds
@@ -162,6 +173,7 @@ const TripModal = ({
     if (trip?._id) {
       try {
         await deleteTrip(token, trip);
+        //TODO: Make it possible to delete mapbox uploads
         if (trip.routeId) deleteRoute(token, trip.routeId);
         if (trip.imageIds?.length > 0) deleteImages(token, trip.imageIds);
         setTrips((trips: ITrip[]) => trips.filter((t) => t._id !== trip._id));
@@ -175,6 +187,7 @@ const TripModal = ({
   const handleClose = () => {
     setTrip(defaultTrip);
     setShowModal(false);
+    setGpx(undefined);
     setGeojson(undefined);
     setBounds(undefined);
     setFiles(undefined);
@@ -185,6 +198,7 @@ const TripModal = ({
 
   const handleGpxChange = async (files: any[]) => {
     if (!files || Array.from(files)?.length === 0) return;
+    setGpx(Array.from(files)[0]);
     const token = await getIdTokenClaims();
     const res = await gpxToGeojson(token, Array.from(files)[0]);
     if (!res?.features || !res.features[0]?.geometry?.coordinates) return;
@@ -200,11 +214,6 @@ const TripModal = ({
 
   const handleImageChange = (files: Blob[]) => {
     setFiles(Array.from(files).map((file) => ({ blob: file })));
-  };
-
-  const saveGeojson = async (token: IdToken) => {
-    if (!(token && trip && geojson)) return null;
-    return await saveRoute(token, geojson);
   };
 
   const removeRoute = () => {

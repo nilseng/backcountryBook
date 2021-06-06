@@ -1,5 +1,4 @@
 import { IdToken } from "@auth0/auth0-react"
-import { v4 as uuid } from "uuid";
 
 export const getRoute = async (id: string) => {
     const res = await fetch(`/api/route/${id}`)
@@ -9,17 +8,28 @@ export const getRoute = async (id: string) => {
     })
 }
 
-export const saveRoute = async (token: IdToken, geojson: any) => {
-    const geojsonId = uuid()
-    await fetch(`/api/route`, {
+export const saveGeojson = async (token: IdToken, geojson: any, id: string) => {
+    await fetch(`/api/route/geojson`, {
         headers: {
             authorization: `Bearer ${token.__raw}`,
             'Content-Type': 'application/json',
         },
         method: "POST",
-        body: JSON.stringify({ geojsonId, geojson }),
+        body: JSON.stringify({ id, geojson }),
     });
-    return geojsonId;
+}
+
+export const saveGpx = async (token: IdToken, gpx: any, id: string) => {
+    const formData = new FormData()
+    formData.append('id', id)
+    formData.append('gpx', gpx)
+    await fetch(`/api/mapbox/upload`, {
+        headers: {
+            authorization: `Bearer ${token.__raw}`,
+        },
+        method: "POST",
+        body: formData,
+    });
 }
 
 export const deleteRoute = async (token: IdToken, routeId: string) => {
@@ -32,6 +42,7 @@ export const deleteRoute = async (token: IdToken, routeId: string) => {
     }).catch(_ => console.error('Could not delete route.'))
 }
 
+//TODO: Use upload API instead (?)
 export const gpxToGeojson = async (token: IdToken, gpx: any) => {
     const formData = new FormData()
     formData.append("gpx", gpx)
