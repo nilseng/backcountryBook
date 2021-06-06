@@ -50,7 +50,6 @@ router.post("/mapbox/upload", checkJwt, upload.array("gpx"), async (req, res) =>
   const file = (req.files as Express.Multer.File[])[0]
   const body = req.body
   if (!body.id) return res.status(400).json('Route id missing')
-  console.log('-------------- id and file seem OK --------------')
   const uploadRes = await createMapboxUpload(body.id, file.buffer).catch(e => ({ error: e }))
   return isError(uploadRes) ? res.status(500).json('Could not perform mapbox upload') : res.status(200).send('Mapbox upload initiated.')
 })

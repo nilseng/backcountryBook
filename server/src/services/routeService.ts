@@ -17,7 +17,6 @@ const getCredentials = async () => {
 export const createMapboxUpload = async (routeId: string, file: any) => {
     const credentials = await getCredentials()
     await putFileOnS3(credentials, file)
-    console.log('staging OK')
     const res = await uploadsClient.createUpload({
         tileset: `nilseng.${routeId}`,
         url: credentials.url,
