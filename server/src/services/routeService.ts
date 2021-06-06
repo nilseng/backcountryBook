@@ -1,8 +1,6 @@
-import axios from "axios"
 import aws from "aws-sdk";
-import { createReadStream } from "fs"
-import path from "path"
 const mbxClient = require('@mapbox/mapbox-sdk');
+
 import mbxUploads from '@mapbox/mapbox-sdk/services/uploads';
 const baseClient = mbxClient({ accessToken: process.env.MAPBOX_UPLOAD_TOKEN });
 const uploadsClient = mbxUploads(baseClient)
