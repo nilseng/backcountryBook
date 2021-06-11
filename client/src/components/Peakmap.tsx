@@ -132,6 +132,7 @@ const Peakmap = ({
         })
       );
     }
+    return () => setMap(undefined);
   }, [setMap, mapEl, interactive, bounds]);
 
   useEffect(() => {
