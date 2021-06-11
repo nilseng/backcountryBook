@@ -125,13 +125,14 @@ const Peakmap = ({
           container: mapEl.current,
           style: "mapbox://styles/mapbox/outdoors-v10",
           zoom: 1,
-          center: [0, 40],
+          center: [0, 20],
+          bounds,
           maxBounds: [-200, -85, 200, 85],
           interactive,
         })
       );
     }
-  }, [setMap, mapEl, interactive]);
+  }, [setMap, mapEl, interactive, bounds]);
 
   useEffect(() => {
     if (bounds && isMapLoaded) {
@@ -139,7 +140,8 @@ const Peakmap = ({
     }
   }, [map, bounds, isMapLoaded]);
 
-  useEffect(() => {
+  // Mapbox upload API sample
+  /* useEffect(() => {
     if (isMapLoaded && map) {
       map?.addSource("nilseng.8e4aa944bf794233a5e29013fb28454c", {
         type: "vector",
@@ -160,7 +162,7 @@ const Peakmap = ({
         },
       });
     }
-  }, [isMapLoaded, map]);
+  }, [isMapLoaded, map]); */
 
   useEffect(() => {
     if (noZoom && isMapLoaded) map?.scrollZoom.disable();
