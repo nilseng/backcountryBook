@@ -5,7 +5,7 @@ import { ITrip } from "../models/Trip";
 import { isError } from "../utils/errorHandling";
 
 const getTrips = async (setTrips: Function, limit?: number, offset?: number, userId?: string) => {
-    const res = await fetch(`/api/trips?limit=${limit}&offset=${offset}&userId=${userId}`).catch(e => ({ error: e }))
+    const res = await fetch(`/api/trips?limit=${limit}&offset=${offset}&userId=${userId ?? ''}`).catch(e => ({ error: e }))
     if (isError(res)) return;
     const trips = await (res as Response).json()
     setTrips((t: ITrip[]) => t ? [...t, ...trips] : trips)

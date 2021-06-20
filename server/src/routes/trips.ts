@@ -14,7 +14,7 @@ const router = express.Router()
 interface Query {
     limit?: number
     offset?: number
-    sub?: string
+    userId?: string
     count?: boolean
 }
 
@@ -23,10 +23,10 @@ const defaultLimit = 1000000;
 router.get("/trips", async (req: any, res) => {
     const query: Query = url.parse(req.url, true).query
     if (query.count) {
-        const count = await db.trips.find(query.sub ? { sub: query.sub } : {}).count().catch(e => ({ error: e }))
+        const count = await db.trips.find(query.userId ? { sub: query.userId } : {}).count().catch(e => ({ error: e }))
         return isError(count) ? res.status(500).json(NaN) : res.status(200).json(count)
     }
-    const trips = await db.trips.find(query.sub ? { sub: query.sub } : {})
+    const trips = await db.trips.find(query.userId ? { sub: query.userId } : {})
         .sort({ tripDate: -1, createdAt: -1 })
         .limit(query.limit ? +query.limit : defaultLimit)
         .skip(query.offset ? +query.offset : 0)
