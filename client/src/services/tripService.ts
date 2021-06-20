@@ -1,6 +1,21 @@
 import { IdToken } from "@auth0/auth0-react";
+import { useEffect } from "react";
 
 import { ITrip } from "../models/Trip";
+import { isError } from "../utils/errorHandling";
+
+const getTrips = async (setTrips: Function, limit?: number, offset?: number, userId?: string) => {
+    const res = await fetch(`/api/trips?limit=${limit}&offset=${offset}&userId=${userId}`).catch(e => ({ error: e }))
+    if (isError(res)) return;
+    const trips = await (res as Response).json()
+    setTrips((t: ITrip[]) => t ? [...t, ...trips] : trips)
+}
+
+export const useGetTrips = (setTrips: Function, limit?: number, offset?: number, userId?: string) => {
+    useEffect(() => {
+        getTrips(setTrips, limit, offset, userId)
+    }, [setTrips, limit, offset, userId]);
+}
 
 export const saveTrip = async (token: IdToken, trip: ITrip): Promise<ITrip> => {
     if (trip.peaks) delete trip.peaks

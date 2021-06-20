@@ -7,6 +7,7 @@ import Loading from "./Loading";
 import { getUser } from "../services/userService";
 import Feed from "./Feed";
 import { ITrip } from "../models/Trip";
+import { useGetTrips } from "../services/tripService";
 
 interface IProps {
   trips: ITrip[];
@@ -18,6 +19,8 @@ const Profile = ({ trips, setTrip, setShowModal }: IProps) => {
   const { isLoading, user } = useAuth0();
   const [mergedUser, setMergedUser] = useState<any>();
   const [userTrips, setUserTrips] = useState<ITrip[]>();
+  const [limit] = useState<number>(3);
+  const [offset, setOffset] = useState<number>(0);
 
   useEffect(() => {
     if (user?.sub) {
@@ -27,11 +30,7 @@ const Profile = ({ trips, setTrip, setShowModal }: IProps) => {
     }
   }, [user]);
 
-  useEffect(() => {
-    if (trips && mergedUser) {
-      setUserTrips(trips.filter((trip) => trip.sub === mergedUser.sub));
-    }
-  }, [trips, mergedUser]);
+  useGetTrips(setUserTrips, limit, offset, user?.sub);
 
   if (isLoading) {
     return <Loading />;
@@ -55,6 +54,7 @@ const Profile = ({ trips, setTrip, setShowModal }: IProps) => {
       <Col sm={10} lg={6} className="p-0">
         {userTrips && (
           <Feed
+            setOffset={setOffset}
             trips={userTrips}
             setTrip={setTrip}
             setShowModal={setShowModal}

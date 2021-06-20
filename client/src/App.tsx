@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Switch, Route, Router, Redirect } from "react-router-dom";
 
 import history from "./utils/history";
@@ -12,6 +12,7 @@ import Peaks from "./components/Peaks";
 import { Welcome } from "./components/Welcome";
 import { useAuth0 } from "@auth0/auth0-react";
 import Loading from "./components/Loading";
+import { useGetTrips } from "./services/tripService";
 
 const defaultTrip: ITrip = {
   name: "",
@@ -25,14 +26,12 @@ const App = () => {
 
   const [trip, setTrip] = useState<ITrip>(defaultTrip);
   const [trips, setTrips] = useState<ITrip[]>();
+  const [limit] = useState<number>(3);
+  const [offset, setOffset] = useState<number>(0);
   const [showModal, setShowModal] = useState<boolean>(false);
 
-  useEffect(() => {
-    fetch("/api/trips").then(async (res) => {
-      const trips = await res.json();
-      setTrips(trips);
-    });
-  }, []);
+  useGetTrips(setTrips, limit, offset);
+
   return (
     <>
       <Router history={history}>
@@ -57,6 +56,7 @@ const App = () => {
             render={() => (
               <Feed
                 trips={trips}
+                setOffset={setOffset}
                 setTrip={setTrip}
                 setShowModal={setShowModal}
               />

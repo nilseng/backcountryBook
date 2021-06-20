@@ -1,5 +1,6 @@
 import express from "express"
 import { ObjectID } from "mongodb"
+import url from "url"
 import { checkJwt } from "../auth/auth"
 
 import { collections as db } from "../database/databaseSetup"
@@ -9,8 +10,17 @@ import { resolveUser, updateUser } from "../services/userService"
 
 const router = express.Router()
 
+interface Query {
+    limit?: number;
+    offset?: number;
+    sub?: string
+}
+
+const defaultLimit = 1000000;
+
 router.get("/trips", async (req: any, res) => {
-    const trips = await db.trips.find({}).sort({ tripDate: -1, createdAt: -1 }).toArray()
+    const query: Query = url.parse(req.url, true).query
+    const trips = await db.trips.find({}).sort({ tripDate: -1, createdAt: -1 }).limit(query.limit ? +query.limit : defaultLimit).skip(query.offset ? +query.offset : 0).toArray()
     for (let trip of trips) {
         trip.user = await resolveUser(trip.sub)
         if (trip.peakIds) trip.peaks = await resolvePeaks(trip.peakIds)
