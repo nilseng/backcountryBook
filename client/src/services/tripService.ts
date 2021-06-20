@@ -4,17 +4,19 @@ import { useEffect } from "react";
 import { ITrip } from "../models/Trip";
 import { isError } from "../utils/errorHandling";
 
-const getTrips = async (setTrips: Function, limit?: number, offset?: number, userId?: string) => {
+const getTrips = async (setTrips: Function, setIsLoading?: Function, limit?: number, offset?: number, userId?: string) => {
+    if (setIsLoading) setIsLoading(true)
     const res = await fetch(`/api/trips?limit=${limit}&offset=${offset}&userId=${userId ?? ''}`).catch(e => ({ error: e }))
     if (isError(res)) return;
     const trips = await (res as Response).json()
     setTrips((t: ITrip[]) => t ? [...t, ...trips] : trips)
+    if (setIsLoading) setTimeout(() => setIsLoading(false), 1000)
 }
 
-export const useGetTrips = (setTrips: Function, limit?: number, offset?: number, userId?: string) => {
+export const useGetTrips = (setTrips: Function, setIsLoading?: Function, limit?: number, offset?: number, userId?: string) => {
     useEffect(() => {
-        getTrips(setTrips, limit, offset, userId)
-    }, [setTrips, limit, offset, userId]);
+        getTrips(setTrips, setIsLoading, limit, offset, userId)
+    }, [setTrips, setIsLoading, limit, offset, userId]);
 }
 
 const getTripCount = async (setTripCount: Function, userId?: string) => {

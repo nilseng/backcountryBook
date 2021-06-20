@@ -26,11 +26,12 @@ const App = () => {
 
   const [trip, setTrip] = useState<ITrip>(defaultTrip);
   const [trips, setTrips] = useState<ITrip[]>();
+  const [isLoadingTrips, setIsLoadingTrips] = useState<boolean>(true);
   const [limit] = useState<number>(3);
   const [offset, setOffset] = useState<number>(0);
   const [showModal, setShowModal] = useState<boolean>(false);
 
-  useGetTrips(setTrips, limit, offset);
+  useGetTrips(setTrips, setIsLoadingTrips, limit, offset);
 
   return (
     <>
@@ -57,6 +58,7 @@ const App = () => {
               <Feed
                 trips={trips}
                 setOffset={setOffset}
+                loading={isLoadingTrips}
                 setTrip={setTrip}
                 setShowModal={setShowModal}
               />

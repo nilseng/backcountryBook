@@ -19,6 +19,7 @@ const Profile = ({ trips, setTrip, setShowModal }: IProps) => {
   const { isLoading, user } = useAuth0();
   const [mergedUser, setMergedUser] = useState<any>();
   const [userTrips, setUserTrips] = useState<ITrip[]>();
+  const [isLoadingTrips, setIsLoadingTrips] = useState<boolean>(true);
   const [limit] = useState<number>(3);
   const [offset, setOffset] = useState<number>(0);
   const [tripCount, setTripCount] = useState<number>();
@@ -31,7 +32,7 @@ const Profile = ({ trips, setTrip, setShowModal }: IProps) => {
     }
   }, [user]);
 
-  useGetTrips(setUserTrips, limit, offset, user?.sub);
+  useGetTrips(setUserTrips, setIsLoadingTrips, limit, offset, user?.sub);
   useGetTripCount(setTripCount, user?.sub);
 
   if (isLoading) {
@@ -58,6 +59,7 @@ const Profile = ({ trips, setTrip, setShowModal }: IProps) => {
           <Feed
             setOffset={setOffset}
             trips={userTrips}
+            loading={isLoadingTrips}
             setTrip={setTrip}
             setShowModal={setShowModal}
           />
