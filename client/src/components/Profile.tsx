@@ -7,7 +7,7 @@ import Loading from "./Loading";
 import { getUser } from "../services/userService";
 import Feed from "./Feed";
 import { ITrip } from "../models/Trip";
-import { useGetTrips } from "../services/tripService";
+import { useGetTripCount, useGetTrips } from "../services/tripService";
 
 interface IProps {
   trips: ITrip[];
@@ -21,6 +21,7 @@ const Profile = ({ trips, setTrip, setShowModal }: IProps) => {
   const [userTrips, setUserTrips] = useState<ITrip[]>();
   const [limit] = useState<number>(3);
   const [offset, setOffset] = useState<number>(0);
+  const [tripCount, setTripCount] = useState<number>();
 
   useEffect(() => {
     if (user?.sub) {
@@ -31,6 +32,7 @@ const Profile = ({ trips, setTrip, setShowModal }: IProps) => {
   }, [user]);
 
   useGetTrips(setUserTrips, limit, offset, user?.sub);
+  useGetTripCount(setTripCount, user?.sub);
 
   if (isLoading) {
     return <Loading />;
@@ -67,7 +69,7 @@ const Profile = ({ trips, setTrip, setShowModal }: IProps) => {
           style={{ maxWidth: "15rem" }}
         >
           <p className="text-light" style={{ fontSize: "3rem" }}>
-            {userTrips?.length || 0}
+            {tripCount || 0}
           </p>
           <h6 className="text-light small">Trips</h6>
         </div>

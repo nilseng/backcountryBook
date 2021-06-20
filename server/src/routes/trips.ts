@@ -7,21 +7,33 @@ import { collections as db } from "../database/databaseSetup"
 import { deleteImage } from "../services/imageService"
 import { resolvePeaks } from "../services/peakService"
 import { resolveUser, updateUser } from "../services/userService"
+import { isError } from "../utils/errorHandling"
 
 const router = express.Router()
 
 interface Query {
-    limit?: number;
-    offset?: number;
+    limit?: number
+    offset?: number
     sub?: string
+    count?: boolean
 }
 
 const defaultLimit = 1000000;
 
 router.get("/trips", async (req: any, res) => {
     const query: Query = url.parse(req.url, true).query
-    const trips = await db.trips.find({}).sort({ tripDate: -1, createdAt: -1 }).limit(query.limit ? +query.limit : defaultLimit).skip(query.offset ? +query.offset : 0).toArray()
-    for (let trip of trips) {
+    if (query.count) {
+        const count = await db.trips.find(query.sub ? { sub: query.sub } : {}).count().catch(e => ({ error: e }))
+        return isError(count) ? res.status(500).json(NaN) : res.status(200).json(count)
+    }
+    const trips = await db.trips.find(query.sub ? { sub: query.sub } : {})
+        .sort({ tripDate: -1, createdAt: -1 })
+        .limit(query.limit ? +query.limit : defaultLimit)
+        .skip(query.offset ? +query.offset : 0)
+        .toArray()
+        .catch(e => ({ error: e }))
+    if (isError(trips)) return res.status(500).json([])
+    for (let trip of (trips as any[])) {
         trip.user = await resolveUser(trip.sub)
         if (trip.peakIds) trip.peaks = await resolvePeaks(trip.peakIds)
     }

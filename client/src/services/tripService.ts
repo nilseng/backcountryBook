@@ -17,6 +17,19 @@ export const useGetTrips = (setTrips: Function, limit?: number, offset?: number,
     }, [setTrips, limit, offset, userId]);
 }
 
+const getTripCount = async (setTripCount: Function, userId?: string) => {
+    const res = await fetch(`/api/trips?count=${true}&userId=${userId}`).catch(e => ({ error: e }))
+    if (isError(res)) return;
+    const count = await (res as Response).json()
+    setTripCount(count)
+}
+
+export const useGetTripCount = (setTripCount: Function, userId?: string) => {
+    useEffect(() => {
+        getTripCount(setTripCount, userId)
+    }, [setTripCount, userId])
+}
+
 export const saveTrip = async (token: IdToken, trip: ITrip): Promise<ITrip> => {
     if (trip.peaks) delete trip.peaks
     if (trip.user) delete trip.user
