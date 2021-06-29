@@ -15,7 +15,7 @@ interface IProps {
   setShowModal: any;
 }
 
-const Profile = ({ trips, setTrip, setShowModal }: IProps) => {
+const Profile = ({ setTrip, setShowModal }: IProps) => {
   const { isLoading, user } = useAuth0();
   const [mergedUser, setMergedUser] = useState<any>();
   const [userTrips, setUserTrips] = useState<ITrip[]>();
