@@ -136,6 +136,15 @@ const Peakmap = ({
   }, [setMap, mapEl, interactive, bounds]);
 
   useEffect(() => {
+    map?.on("load", () => {
+      setIsMapLoaded(true);
+    });
+    return () => {
+      setIsMapLoaded(false);
+    };
+  }, [map]);
+
+  useEffect(() => {
     if (bounds && isMapLoaded) {
       map?.fitBounds(bounds, { duration: 0 });
     }
@@ -171,10 +180,6 @@ const Peakmap = ({
 
   useEffect(() => {
     if (map && mapEl.current) {
-      map.on("load", () => {
-        setIsMapLoaded(true);
-      });
-
       _3d &&
         map.on("zoom", () => {
           if (map.getZoom() >= 10) {
@@ -197,15 +202,20 @@ const Peakmap = ({
         if (!isAuthenticated) return;
         if (e.lngLat) {
           const elevation = await getElevation(e);
-          setPeak({
-            ...defaultPeak,
-            lngLat: e.lngLat,
-            height: elevation,
-          });
-          setShowModal(true);
+          setPeak &&
+            setPeak({
+              ...defaultPeak,
+              lngLat: e.lngLat,
+              height: elevation,
+            });
+          setShowModal && setShowModal(true);
         }
       });
     }
+    return () => {
+      if (setPeak) setPeak(defaultPeak);
+      if (setShowModal) setShowModal(false);
+    };
   }, [map, isMapLoaded, isAuthenticated, defaultPeak, setPeak, setShowModal]);
 
   useEffect(() => {

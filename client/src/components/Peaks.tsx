@@ -7,6 +7,7 @@ import PeakModal from "./PeakModal";
 import Peakmap from "./Peakmap";
 import { useLocation } from "react-router-dom";
 import { getBounds, getRoute } from "../services/routeService";
+import { ErrorBoundary } from "./ErrorBoundary";
 
 const defaultPeak: IPeak = {
   name: "",
@@ -97,17 +98,21 @@ const Peaks = () => {
 
   return peaks ? (
     <>
-      <Peakmap
-        setPeak={setPeak}
-        peaks={peaks}
-        defaultPeak={defaultPeak}
-        setShowModal={setShowModal}
-        focusPeak={focusPeak}
-        route={focusRoute}
-        bounds={bounds}
-        _3d={true}
-        hasGeoLocationControl={true}
-      />
+      <ErrorBoundary
+        {...{ message: "Could not load map... :( Try a refresh." }}
+      >
+        <Peakmap
+          setPeak={setPeak}
+          peaks={peaks}
+          defaultPeak={defaultPeak}
+          setShowModal={setShowModal}
+          focusPeak={focusPeak}
+          route={focusRoute}
+          bounds={bounds}
+          _3d={true}
+          hasGeoLocationControl={true}
+        />
+      </ErrorBoundary>
       <PeakModal
         peak={peak}
         setPeak={setPeak}
