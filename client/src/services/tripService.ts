@@ -57,3 +57,15 @@ export const deleteTrip = async (token: IdToken, trip: ITrip) => {
     })
     return res.json()
 }
+
+export const likeTrip = async (tripId: string, likes: React.MutableRefObject<number>, token: IdToken) => {
+    fetch(`/api/trip/like`, {
+        method: "POST",
+        headers: {
+            Authorization: `Bearer ${token.__raw}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ tripId, likes: likes.current })
+    }).catch(e => ({ error: e }))
+    likes.current = 0
+}

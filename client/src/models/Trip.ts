@@ -14,4 +14,6 @@ export interface ITrip {
     sub?: string
     user?: IUser
     routeId?: string | null
+    likes?: number
+    likedByUsers?: string[]
 }

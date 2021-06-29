@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
 import Card from "react-bootstrap/Card";
 import Carousel from "react-bootstrap/Carousel";
@@ -6,13 +6,20 @@ import Image from "react-bootstrap/Image";
 import Button from "react-bootstrap/Button";
 import { useAuth0 } from "@auth0/auth0-react";
 import { FontAwesomeIcon as FaIcon } from "@fortawesome/react-fontawesome";
-import { faMountain, faPen } from "@fortawesome/free-solid-svg-icons";
+import {
+  faMountain,
+  faPen,
+  faHeart as fullHeart,
+} from "@fortawesome/free-solid-svg-icons";
+import { faHeart as emptyHeart } from "@fortawesome/free-regular-svg-icons";
 
 import { ITrip } from "../models/Trip";
 import "../styles/Card.scss";
 import { getBounds, getRoute } from "../services/routeService";
 import Peakmap from "./Peakmap";
 import ImagePlaceholder from "./ImagePlaceholder";
+import { debounce } from "lodash";
+import { likeTrip } from "../services/tripService";
 
 interface IProps {
   trip: ITrip;
@@ -23,16 +30,32 @@ interface IProps {
 const routeMargin = 0.002;
 
 const TripCard = ({ trip, setTripToEdit, setShowModal }: IProps) => {
-  const { user } = useAuth0();
+  const { user, loginWithRedirect, getIdTokenClaims } = useAuth0();
+
   const history = useHistory();
+
   const [date, setDate] = useState<string>();
+
   const [route, setRoute] = useState();
   const [bounds, setBounds] = useState<[number, number, number, number]>();
   const [images, setImages] = useState<any[]>([]);
+  const [likes, setLikes] = useState<number>(0);
+  const unsavedLikes = useRef<number>(0);
+  const debouncedLikeTrip = useRef(debounce(likeTrip, 250, { leading: false }));
 
   const onEdit = () => {
     setTripToEdit(trip);
     setShowModal(true);
+  };
+
+  const like = async () => {
+    if (trip._id && user) {
+      setLikes((likes) => ++likes);
+      unsavedLikes.current = unsavedLikes.current + 1;
+      const token = await getIdTokenClaims();
+      debouncedLikeTrip.current(trip._id, unsavedLikes, token);
+    }
+    if (!user) loginWithRedirect({ screen_hint: "signup" });
   };
 
   useEffect(() => {
@@ -168,7 +191,23 @@ const TripCard = ({ trip, setTripToEdit, setShowModal }: IProps) => {
             <span className="small ml-1">{peak.height?.toLocaleString()}m</span>
           </div>
         ))}
-      {trip.description && <p className="mt-2 ml-1">{trip.description}</p>}
+      {trip.description && <p className="mt-2 ml-1 mb-0">{trip.description}</p>}
+      <span className="d-flex align-items-center">
+        <Button variant="link" className="px-1" style={{ boxShadow: "none" }}>
+          <FaIcon
+            icon={
+              likes || (user?.sub && trip.likedByUsers?.includes(user?.sub))
+                ? fullHeart
+                : emptyHeart
+            }
+            style={{ cursor: "pointer" }}
+            onClick={like}
+          />
+        </Button>
+        {likes || trip.likes ? (
+          <p className="small mb-0">{(trip.likes || 0) + likes}</p>
+        ) : null}
+      </span>
     </Card>
   );
 };

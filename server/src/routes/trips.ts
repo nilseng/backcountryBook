@@ -57,6 +57,14 @@ router.post("/trip", checkJwt, async (req: any, res) => {
     }
 })
 
+router.post("/trip/like", checkJwt, async (req: any, res) => {
+    const { tripId, likes } = req.body
+    const sub = req.user.sub
+    if (!tripId || (!likes && likes !== 0)) return res.status(404).json('Invalid body.')
+    const doc = await db.trips.findOneAndUpdate({ _id: new ObjectID(tripId) }, { $inc: { likes }, $addToSet: { likedByUsers: sub } }).catch(e => ({ error: e }))
+    return isError(doc) ? res.status(500).json('Something went wrong:(') : res.status(200).send()
+})
+
 router.delete("/trip", checkJwt, async (req: any, res) => {
     if (!req.body?._id) return res.status(400).json({ Error: 'No trip _id received by server.' })
     if (!req.user.sub === req.body.sub) return res.status(401).json({ Error: 'Unauthorized' })
