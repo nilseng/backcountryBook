@@ -20,6 +20,7 @@ import Peakmap from "./Peakmap";
 import ImagePlaceholder from "./ImagePlaceholder";
 import { debounce } from "lodash";
 import { likeTrip } from "../services/tripService";
+import { ErrorBoundary } from "./ErrorBoundary";
 
 interface IProps {
   trip: ITrip;
@@ -168,14 +169,16 @@ const TripCard = ({ trip, setTripToEdit, setShowModal }: IProps) => {
           style={{ cursor: "pointer" }}
           onClick={() => history.push(`/peaks?routeId=${trip.routeId}`)}
         >
-          <Peakmap
-            route={route}
-            height="20rem"
-            width="auto"
-            bounds={bounds}
-            _3d={false}
-            interactive={false}
-          />
+          <ErrorBoundary {...{ message: "Could not load map... :(" }}>
+            <Peakmap
+              route={route}
+              height="20rem"
+              width="auto"
+              bounds={bounds}
+              _3d={false}
+              interactive={false}
+            />
+          </ErrorBoundary>
         </div>
       )}
       {trip.peaks &&
