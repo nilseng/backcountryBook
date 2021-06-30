@@ -39,12 +39,13 @@ import {
 
 interface IProps {
   trip: ITrip;
-  setTrip: any;
+  setTrip: Function;
   defaultTrip: ITrip;
   tripToEdit?: ITrip;
-  showModal: any;
-  setShowModal: any;
-  setTrips: any;
+  showModal: boolean;
+  setShowModal: Function;
+  setTrips: Function;
+  setUserTrips: Function;
 }
 
 const mapMargin = 0.002;
@@ -56,6 +57,7 @@ const TripModal = ({
   showModal,
   setShowModal,
   setTrips,
+  setUserTrips,
 }: IProps) => {
   const { isLoading, user, getIdTokenClaims } = useAuth0();
 
@@ -155,6 +157,10 @@ const TripModal = ({
         { ...savedTrip, user, peaks },
         ...trips.filter((t) => t._id !== savedTrip._id),
       ]);
+      setUserTrips((trips: ITrip[]) => [
+        { ...savedTrip, user, peaks },
+        ...trips.filter((t) => t._id !== savedTrip._id),
+      ]);
       if (removedRouteId) {
         // Not using await here since modal can close before route is deleted.
         deleteRoute(token, removedRouteId);
@@ -177,6 +183,9 @@ const TripModal = ({
         if (trip.routeId) deleteRoute(token, trip.routeId);
         if (trip.imageIds?.length > 0) deleteImages(token, trip.imageIds);
         setTrips((trips: ITrip[]) => trips.filter((t) => t._id !== trip._id));
+        setUserTrips((trips: ITrip[]) =>
+          trips.filter((t) => t._id !== trip._id)
+        );
       } catch (e) {
         console.log(`Something went wrong: ${e}`);
       }

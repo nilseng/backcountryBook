@@ -10,15 +10,20 @@ import { ITrip } from "../models/Trip";
 import { useGetTripCount, useGetTrips } from "../services/tripService";
 
 interface IProps {
-  trips: ITrip[];
   setTrip: any;
   setShowModal: any;
+  userTrips: ITrip[];
+  setUserTrips: Function;
 }
 
-const Profile = ({ setTrip, setShowModal }: IProps) => {
+const Profile = ({
+  setTrip,
+  setShowModal,
+  userTrips,
+  setUserTrips,
+}: IProps) => {
   const { isLoading, user } = useAuth0();
   const [mergedUser, setMergedUser] = useState<any>();
-  const [userTrips, setUserTrips] = useState<ITrip[]>();
   const [isLoadingTrips, setIsLoadingTrips] = useState<boolean>(true);
   const [limit] = useState<number>(3);
   const [offset, setOffset] = useState<number>(0);

@@ -26,6 +26,7 @@ const App = () => {
 
   const [trip, setTrip] = useState<ITrip>(defaultTrip);
   const [trips, setTrips] = useState<ITrip[]>();
+  const [userTrips, setUserTrips] = useState<ITrip[]>();
   const [isLoadingTrips, setIsLoadingTrips] = useState<boolean>(true);
   const [limit] = useState<number>(3);
   const [offset, setOffset] = useState<number>(0);
@@ -68,7 +69,8 @@ const App = () => {
           <PrivateRoute
             path="/profile"
             component={Profile}
-            trips={trips}
+            userTrips={userTrips}
+            setUserTrips={setUserTrips}
             setTrip={setTrip}
             setShowModal={setShowModal}
           />
@@ -82,6 +84,7 @@ const App = () => {
           showModal={showModal}
           setShowModal={setShowModal}
           setTrips={setTrips}
+          setUserTrips={setUserTrips}
         />
       )}
     </>
