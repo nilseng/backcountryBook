@@ -10,6 +10,7 @@ import {
   faMountain,
   faPen,
   faHeart as fullHeart,
+  faCrown,
 } from "@fortawesome/free-solid-svg-icons";
 import { faHeart as emptyHeart } from "@fortawesome/free-regular-svg-icons";
 
@@ -133,7 +134,14 @@ const TripCard = ({ trip, setTripToEdit, setShowModal }: IProps) => {
         <div className="d-flex justify-content-between">
           <div>
             {date && <p className="small mb-0">{date}</p>}
-            {trip.user && <p className="small text-muted">{trip.user.name}</p>}
+            {trip.user && (
+              <span className="small text-muted">
+                {trip.user.name}
+                {trip.user.level === "Founder" && (
+                  <FaIcon icon={faCrown} className="text-warning ml-2" />
+                )}
+              </span>
+            )}
           </div>
           {user && user.sub === trip.sub && (
             <Button variant="link" onClick={onEdit}>
