@@ -29,8 +29,7 @@ interface IProps {
   hasGeoLocationControl?: boolean;
 }
 
-const tileQueryUrl =
-  "https://api.mapbox.com/v4/mapbox.mapbox-terrain-v2/tilequery";
+const tileQueryUrl = "https://api.mapbox.com/v4/mapbox.mapbox-terrain-v2/tilequery";
 
 const defaultHeight = "calc(100vh - 58px)";
 const defaultWidth = "vw-100";
@@ -105,16 +104,12 @@ const Peakmap = ({
     }
   };
 
-  const getElevation = async (
-    e: mapboxgl.MapMouseEvent & mapboxgl.EventData
-  ) => {
+  const getElevation = async (e: mapboxgl.MapMouseEvent & mapboxgl.EventData) => {
     const res = await fetch(
       `${tileQueryUrl}/${e.lngLat.lng},${e.lngLat.lat}.json?layers=contour&limit=50&access_token=${mapboxgl.accessToken}`
     );
     const data = await res.json();
-    const elevationArray = data.features.map(
-      (feature: { geometry: any; properties: any }) => feature.properties.ele
-    );
+    const elevationArray = data.features.map((feature: { geometry: any; properties: any }) => feature.properties.ele);
     return Math.max(...elevationArray);
   };
 
@@ -228,10 +223,7 @@ const Peakmap = ({
   useEffect(() => {
     if (map && peaks) {
       for (let peak of peaks) {
-        if (peak.lngLat)
-          new mapboxgl.Marker({ color: "#343a40" })
-            .setLngLat(peak.lngLat)
-            .addTo(map);
+        if (peak.lngLat) new mapboxgl.Marker({ color: "#343a40" }).setLngLat(peak.lngLat).addTo(map);
       }
     }
   }, [map, peaks]);
@@ -255,7 +247,7 @@ const Peakmap = ({
   }, [map, isMapLoaded, focusPeak]);
 
   useEffect(() => {
-    if (route && map && isMapLoaded) {
+    if (route && map && isMapLoaded && map.isStyleLoaded()) {
       const source = map.getSource("route");
       if (!source) map.addSource("route", { type: "geojson", data: route });
       if (!map.getLayer("route")) {
@@ -287,10 +279,7 @@ const Peakmap = ({
       }}
     >
       {isAuthenticated && setPeak && (
-        <div
-          className="bg-dark text-light position-absolute rounded p-2 m-2 ml-5"
-          style={{ zIndex: 999 }}
-        >
+        <div className="bg-dark text-light position-absolute rounded p-2 m-2 ml-5" style={{ zIndex: 999 }}>
           Click to add peak
         </div>
       )}
