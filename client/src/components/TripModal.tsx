@@ -22,20 +22,9 @@ import { searchPeaks } from "../services/peakService";
 import { IPeak } from "../models/Peak";
 import { Badge, InputGroup } from "react-bootstrap";
 import { convertToDateInputFormat } from "../utils/dateFunctions";
-import {
-  deleteRoute,
-  getBounds,
-  getRoute,
-  gpxToGeojson,
-  saveGeojson,
-  saveGpx,
-} from "../services/routeService";
+import { deleteRoute, getBounds, getRoute, gpxToGeojson, saveGeojson, saveGpx } from "../services/routeService";
 import Peakmap from "./Peakmap";
-import {
-  deleteImages,
-  getImageBlobs,
-  saveImages,
-} from "../services/imageService";
+import { deleteImages, getImageBlobs, saveImages } from "../services/imageService";
 
 interface IProps {
   trip: ITrip;
@@ -50,15 +39,7 @@ interface IProps {
 
 const mapMargin = 0.002;
 
-const TripModal = ({
-  trip,
-  setTrip,
-  defaultTrip,
-  showModal,
-  setShowModal,
-  setTrips,
-  setUserTrips,
-}: IProps) => {
+const TripModal = ({ trip, setTrip, defaultTrip, showModal, setShowModal, setTrips, setUserTrips }: IProps) => {
   const { isLoading, user, getIdTokenClaims } = useAuth0();
 
   const [searchedPeaks, setSearchedPeaks] = useState<IPeak[]>([]);
@@ -75,18 +56,11 @@ const TripModal = ({
 
   const onShow = async () => {
     if (trip?.routeId && !geojson) {
-      const route = await getRoute(trip.routeId).catch((e) =>
-        console.log("Could not fetch route.")
-      );
+      const route = await getRoute(trip.routeId).catch((e) => console.log("Could not fetch route."));
       if (!route?.features) return;
       setGeojson(route);
       const bounds = getBounds(route?.features[0]?.geometry?.coordinates);
-      setBounds([
-        bounds.xMin - mapMargin,
-        bounds.yMin - mapMargin,
-        bounds.xMax + mapMargin,
-        bounds.yMax + mapMargin,
-      ]);
+      setBounds([bounds.xMin - mapMargin, bounds.yMin - mapMargin, bounds.xMax + mapMargin, bounds.yMax + mapMargin]);
     }
     if (trip?.imageIds?.length > 0 && !files) {
       const imageBlobs = await getImageBlobs(trip.imageIds);
@@ -137,10 +111,9 @@ const TripModal = ({
       let routeId;
       if (gpx) {
         routeId = uuid().replaceAll("-", "");
-        const res: any = await Promise.all([
-          saveGeojson(token, geojson, routeId),
-          saveGpx(token, gpx, routeId),
-        ]).catch((e) => ({ error: "saving route failed" }));
+        const res: any = await Promise.all([saveGeojson(token, geojson, routeId), saveGpx(token, gpx, routeId)]).catch(
+          (e) => ({ error: "saving route failed" })
+        );
         //TODO: Surface errors to user instead of just early return
         if (res?.error) return;
       }
@@ -153,14 +126,12 @@ const TripModal = ({
             routeId: routeId,
           })
         : await saveTrip(token, { ...trip, routeId: routeId });
-      setTrips((trips: ITrip[]) => [
-        { ...savedTrip, user, peaks },
-        ...trips.filter((t) => t._id !== savedTrip._id),
-      ]);
-      setUserTrips((trips: ITrip[]) => [
-        { ...savedTrip, user, peaks },
-        ...trips.filter((t) => t._id !== savedTrip._id),
-      ]);
+      setTrips((trips: ITrip[]) => [{ ...savedTrip, user, peaks }, ...trips.filter((t) => t._id !== savedTrip._id)]);
+      setUserTrips((trips: ITrip[]) =>
+        trips
+          ? [{ ...savedTrip, user, peaks }, ...trips.filter((t) => t._id !== savedTrip._id)]
+          : [{ ...savedTrip, user, peaks }]
+      );
       if (removedRouteId) {
         // Not using await here since modal can close before route is deleted.
         deleteRoute(token, removedRouteId);
@@ -183,9 +154,7 @@ const TripModal = ({
         if (trip.routeId) deleteRoute(token, trip.routeId);
         if (trip.imageIds?.length > 0) deleteImages(token, trip.imageIds);
         setTrips((trips: ITrip[]) => trips.filter((t) => t._id !== trip._id));
-        setUserTrips((trips: ITrip[]) =>
-          trips.filter((t) => t._id !== trip._id)
-        );
+        setUserTrips((trips: ITrip[]) => trips.filter((t) => t._id !== trip._id));
       } catch (e) {
         console.log(`Something went wrong: ${e}`);
       }
@@ -213,12 +182,7 @@ const TripModal = ({
     if (!res?.features || !res.features[0]?.geometry?.coordinates) return;
     setGeojson(res);
     const bounds = getBounds(res?.features[0]?.geometry?.coordinates);
-    setBounds([
-      bounds.xMin - mapMargin,
-      bounds.yMin - mapMargin,
-      bounds.xMax + mapMargin,
-      bounds.yMax + mapMargin,
-    ]);
+    setBounds([bounds.xMin - mapMargin, bounds.yMin - mapMargin, bounds.xMax + mapMargin, bounds.yMax + mapMargin]);
   };
 
   const handleImageChange = (files: Blob[]) => {
@@ -251,13 +215,7 @@ const TripModal = ({
   if (isLoading) return null;
 
   return showModal && trip ? (
-    <Modal
-      id="tripModal"
-      show={showModal}
-      onShow={onShow}
-      onHide={handleClose}
-      animation={false}
-    >
+    <Modal id="tripModal" show={showModal} onShow={onShow} onHide={handleClose} animation={false}>
       {isSaving && <Loading text={"Saving trip..."} height={"47rem"} />}
       {!isSaving && (
         <>
@@ -281,10 +239,7 @@ const TripModal = ({
               <Col sm={8}>
                 <InputGroup size="sm">
                   <InputGroup.Prepend>
-                    <InputGroup.Text
-                      className="small mb-2"
-                      style={{ minHeight: "1.5rem" }}
-                    >
+                    <InputGroup.Text className="small mb-2" style={{ minHeight: "1.5rem" }}>
                       Date
                     </InputGroup.Text>
                   </InputGroup.Prepend>
@@ -292,11 +247,7 @@ const TripModal = ({
                     size="sm"
                     type="datetime-local"
                     placeholder="yyyy-mm-ddThh:mm"
-                    value={
-                      trip.tripDate
-                        ? convertToDateInputFormat(trip.tripDate)
-                        : ""
-                    }
+                    value={trip.tripDate ? convertToDateInputFormat(trip.tripDate) : ""}
                     onChange={(e) =>
                       setTrip({
                         ...trip,
@@ -317,14 +268,7 @@ const TripModal = ({
                   style={{ zIndex: 10000, cursor: "pointer", right: "1rem" }}
                   onClick={removeRoute}
                 />
-                <Peakmap
-                  route={geojson}
-                  height="20rem"
-                  width="auto"
-                  bounds={bounds}
-                  _3d={false}
-                  interactive={false}
-                />
+                <Peakmap route={geojson} height="20rem" width="auto" bounds={bounds} _3d={false} interactive={false} />
               </div>
             )}
             {!trip.routeId && (
@@ -332,9 +276,7 @@ const TripModal = ({
                 <Form.File custom>
                   <Form.File.Input
                     accept="application/gpx+xml"
-                    onChange={async (e: any) =>
-                      await handleGpxChange(e.target.files)
-                    }
+                    onChange={async (e: any) => await handleGpxChange(e.target.files)}
                   />
                   <Form.File.Label
                     data-browse="Select GPX file"
@@ -350,9 +292,7 @@ const TripModal = ({
               {files && files.length > 0 && (
                 <Carousel interval={null} className="h-100">
                   {files.map((file, i) => (
-                    <Carousel.Item
-                      key={file.id || (file.blob as any).name || i}
-                    >
+                    <Carousel.Item key={file.id || (file.blob as any).name || i}>
                       <FaIcon
                         icon={faTimes}
                         className="text-light position-absolute mt-2"
@@ -363,26 +303,16 @@ const TripModal = ({
                         }}
                         onClick={() => removeImage(file, i)}
                       />
-                      <Image
-                        className="preview-image"
-                        src={URL.createObjectURL(file.blob)}
-                        rounded
-                      />
+                      <Image className="preview-image" src={URL.createObjectURL(file.blob)} rounded />
                     </Carousel.Item>
                   ))}
                 </Carousel>
               )}
-              {(!files || files?.length === 0) && (
-                <ImagePlaceholder text={"No images selected."} />
-              )}
+              {(!files || files?.length === 0) && <ImagePlaceholder text={"No images selected."} />}
             </div>
             <Form.Group className="mt-2">
               <Form.File custom>
-                <Form.File.Input
-                  multiple
-                  accept="image/*"
-                  onChange={(e: any) => handleImageChange(e.target.files)}
-                />
+                <Form.File.Input multiple accept="image/*" onChange={(e: any) => handleImageChange(e.target.files)} />
                 <Form.File.Label
                   data-browse="Select images"
                   className="small bg-secondary text-light border-dark"
@@ -397,11 +327,7 @@ const TripModal = ({
               {trip.peaks?.map((peak, i) => (
                 <Badge key={i} pill variant="primary ml-1">
                   {peak.name}
-                  <Button
-                    size="sm"
-                    className="m-0 ml-1 p-0"
-                    onClick={() => removePeak(i)}
-                  >
+                  <Button size="sm" className="m-0 ml-1 p-0" onClick={() => removePeak(i)}>
                     <FaIcon icon={faTimes} className="m-0" />
                   </Button>
                 </Badge>
@@ -417,11 +343,7 @@ const TripModal = ({
               ></Form.Control>
               <ListGroup>
                 {searchedPeaks?.map((peak) => (
-                  <ListGroup.Item
-                    key={peak._id}
-                    className="bg-secondary small py-0"
-                    style={{ minHeight: "1.5rem" }}
-                  >
+                  <ListGroup.Item key={peak._id} className="bg-secondary small py-0" style={{ minHeight: "1.5rem" }}>
                     <Button variant="secondary" onClick={() => addPeak(peak)}>
                       {peak.name}
                     </Button>
@@ -433,9 +355,7 @@ const TripModal = ({
               <Form.Label>Description</Form.Label>
               <Form.Control
                 value={trip.description}
-                onChange={(e) =>
-                  setTrip({ ...trip, description: e.target.value })
-                }
+                onChange={(e) => setTrip({ ...trip, description: e.target.value })}
                 placeholder="How was the trip?"
                 as="textarea"
                 rows={3}
