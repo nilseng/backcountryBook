@@ -38,43 +38,45 @@ const App = () => {
     <>
       <Router history={history}>
         <NavBar setShowModal={setShowModal} />
-        <Switch>
-          <Route path="/welcome" component={Welcome} />
-          <Route
-            path="/"
-            exact
-            render={() =>
-              isLoading ? (
-                <Loading text="Loading..." height="80vh" margin="2rem" />
-              ) : isAuthenticated ? (
-                <Redirect to="/feed" />
-              ) : (
-                <Welcome />
-              )
-            }
-          />
-          <Route
-            path="/feed"
-            render={() => (
-              <Feed
-                trips={trips}
-                setOffset={setOffset}
-                loading={isLoadingTrips}
-                setTrip={setTrip}
-                setShowModal={setShowModal}
-              />
-            )}
-          />
-          <Route path="/peaks" component={Peaks} />
-          <PrivateRoute
-            path="/profile"
-            component={Profile}
-            userTrips={userTrips}
-            setUserTrips={setUserTrips}
-            setTrip={setTrip}
-            setShowModal={setShowModal}
-          />
-        </Switch>
+        <div style={{ paddingTop: "3.5rem" }}>
+          <Switch>
+            <Route path="/welcome" component={Welcome} />
+            <Route
+              path="/"
+              exact
+              render={() =>
+                isLoading ? (
+                  <Loading text="Loading..." height="80vh" margin="2rem" />
+                ) : isAuthenticated ? (
+                  <Redirect to="/feed" />
+                ) : (
+                  <Welcome />
+                )
+              }
+            />
+            <Route
+              path="/feed"
+              render={() => (
+                <Feed
+                  trips={trips}
+                  setOffset={setOffset}
+                  loading={isLoadingTrips}
+                  setTrip={setTrip}
+                  setShowModal={setShowModal}
+                />
+              )}
+            />
+            <Route path="/peaks" component={Peaks} />
+            <PrivateRoute
+              path="/profile"
+              component={Profile}
+              userTrips={userTrips}
+              setUserTrips={setUserTrips}
+              setTrip={setTrip}
+              setShowModal={setShowModal}
+            />
+          </Switch>
+        </div>
       </Router>
       {trips && (
         <TripModal

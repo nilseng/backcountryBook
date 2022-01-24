@@ -21,7 +21,7 @@ const NavBar = ({ setShowModal }: IProps) => {
   const { isLoading, isAuthenticated, loginWithRedirect, logout } = useAuth0();
 
   return (
-    <Navbar bg="dark" variant="dark" expand="md" collapseOnSelect>
+    <Navbar fixed="top" bg="dark" variant="dark" expand="md" collapseOnSelect>
       <Navbar.Brand href="/">
         <FaIcon icon={faMountain} className="mr-2"></FaIcon>
         BackcountryBook
