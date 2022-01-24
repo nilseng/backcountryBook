@@ -1,7 +1,7 @@
 import db, { Collection } from "mongodb";
 
 export const collections: {
-  [key: string]: Collection
+  [key: string]: Collection;
 } = {};
 
 export const connectToMongoDb = async () => {
@@ -30,7 +30,7 @@ export const connectToMongoDb = async () => {
   collections.trips.createIndex({ updatedAt: 1 });
   collections.trips.createIndex({ tripDate: 1, createdAt: 1 });
 
-  collections.peaks.createIndex({ name: 1 })
+  collections.peaks.createIndex({ name: 1 });
 
   //Connection events
   client.on("connected", () => {
