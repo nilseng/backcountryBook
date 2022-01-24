@@ -202,7 +202,9 @@ const TripCard = ({ trip, setTripToEdit, setShowModal }: IProps) => {
             <span className="small ml-1">{peak.height?.toLocaleString()}m</span>
           </div>
         ))}
-      {trip.description && <p className="mt-2 ml-1 mb-0">{trip.description}</p>}
+      {trip.description && (
+        <pre className="p text-light mt-2 ml-1 mb-0">{trip.description}</pre>
+      )}
       <span className="d-flex align-items-center">
         <Button variant="link" className="px-1" style={{ boxShadow: "none" }}>
           <FaIcon
