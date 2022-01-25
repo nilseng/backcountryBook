@@ -9,7 +9,7 @@ export const StatBar = () => {
 
   return (
     <div className="row fixed-bottom">
-      <div className="bcb-bg-transparent text-light col d-flex justify-content-around p-sm-4 p-2">
+      <div className="bcb-bg-transparent small text-light col d-flex justify-content-around p-sm-4 p-2">
         <span>
           Users: <span className="font-weight-bold m-0 ml-2">{userCount}</span>
         </span>
