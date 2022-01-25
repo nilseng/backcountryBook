@@ -1,3 +1,6 @@
+import { faUser, faImage } from "@fortawesome/free-regular-svg-icons";
+import { faMountain } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { usePeakCount } from "../services/peakService";
 import { useTripCount } from "../services/tripService";
 import { useUserCount } from "../services/userService";
@@ -9,17 +12,24 @@ export const StatBar = () => {
 
   return (
     <div className="row fixed-bottom">
-      <div className="bcb-bg-transparent small text-light col d-flex justify-content-around p-sm-4 p-2">
-        <span>
-          Users: <span className="font-weight-bold m-0 ml-2">{userCount}</span>
+      <div className="bcb-bg-transparent text-light col d-flex justify-content-around p-sm-3 p-2">
+        <span className="d-flex flex-column align-items-center">
+          <p className="font-weight-bold mb-1">{userCount}</p>
+          <p className="small m-0">
+            <FontAwesomeIcon icon={faUser} /> users
+          </p>
         </span>
-        <span className="ml-4">
-          Activities:{" "}
-          <span className="font-weight-bold m-0 ml-2">{tripCount}</span>
+        <span className="d-flex flex-column align-items-center">
+          <p className="font-weight-bold mb-1">{tripCount}</p>
+          <p className="small m-0">
+            <FontAwesomeIcon icon={faImage} /> activities
+          </p>
         </span>
-        <span className="ml-4">
-          Mountains:{" "}
-          <span className="font-weight-bold m-0 ml-2">{peakCount}</span>
+        <span className="d-flex flex-column align-items-center">
+          <p className="font-weight-bold mb-1">{peakCount}</p>
+          <p className="small m-0">
+            <FontAwesomeIcon icon={faMountain} /> mountains
+          </p>
         </span>
       </div>
     </div>
