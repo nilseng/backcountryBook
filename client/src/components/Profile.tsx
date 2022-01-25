@@ -7,7 +7,7 @@ import Loading from "./Loading";
 import { getUser } from "../services/userService";
 import Feed from "./Feed";
 import { ITrip } from "../models/Trip";
-import { useGetTripCount, useGetTrips } from "../services/tripService";
+import { useTripCount, useGetTrips } from "../services/tripService";
 
 interface IProps {
   setTrip: any;
@@ -27,7 +27,6 @@ const Profile = ({
   const [isLoadingTrips, setIsLoadingTrips] = useState<boolean>(true);
   const [limit] = useState<number>(3);
   const [offset, setOffset] = useState<number>(0);
-  const [tripCount, setTripCount] = useState<number>();
 
   useEffect(() => {
     if (user?.sub) {
@@ -38,7 +37,7 @@ const Profile = ({
   }, [user]);
 
   useGetTrips(setUserTrips, setIsLoadingTrips, limit, offset, user?.sub);
-  useGetTripCount(setTripCount, user?.sub);
+  const tripCount = useTripCount(user?.sub);
 
   if (isLoading) {
     return <Loading />;

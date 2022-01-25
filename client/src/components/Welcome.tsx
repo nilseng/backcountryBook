@@ -3,6 +3,7 @@ import Button from "react-bootstrap/Button";
 import "./Welcome.scss";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useHistory } from "react-router";
+import { StatBar } from "./StatBar";
 
 export const Welcome = () => {
   const { loginWithRedirect } = useAuth0();
@@ -38,6 +39,7 @@ export const Welcome = () => {
           </div>
         </Card>
       </div>
+      <StatBar />
     </>
   );
 };
