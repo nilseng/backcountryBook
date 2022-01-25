@@ -331,7 +331,7 @@ const TripModal = ({
                 />
               </div>
             )}
-            {!trip.routeId && (
+            {(!trip.routeId || !geojson) && (
               <Form.Group className="mt-2">
                 <Form.File custom>
                   <Form.File.Input
