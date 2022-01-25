@@ -11,15 +11,14 @@ export const StatBar = () => {
     <div className="row fixed-bottom">
       <div className="bcb-bg-transparent text-light col d-flex justify-content-around p-sm-4 p-2">
         <span>
-          Active Users:{" "}
-          <span className="font-weight-bold m-0 ml-2">{userCount}</span>
+          Users: <span className="font-weight-bold m-0 ml-2">{userCount}</span>
         </span>
         <span className="ml-4">
           Activities:{" "}
           <span className="font-weight-bold m-0 ml-2">{tripCount}</span>
         </span>
         <span className="ml-4">
-          Visited peaks:{" "}
+          Mountains:{" "}
           <span className="font-weight-bold m-0 ml-2">{peakCount}</span>
         </span>
       </div>
