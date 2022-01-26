@@ -1,11 +1,11 @@
-import { collections as db } from "../database/databaseSetup"
+import { collections as db } from "../database/databaseSetup";
 
 export const resolveUser = async (sub: string) => {
-    const user = await db.users.findOne({ sub: sub })
-    return user
-}
+  const user = await db.users.findOne({ sub: sub }).catch((e) => console.error(`Could not resolve user w sub=${sub}`));
+  return user;
+};
 
 export const updateUser = (user: any) => {
-    user.updatedInDbAt = Date.now();
-    db.users.updateOne({ sub: user.sub }, { $set: user }, { upsert: true });
+  user.updatedInDbAt = Date.now();
+  db.users.updateOne({ sub: user.sub }, { $set: user }, { upsert: true });
 };

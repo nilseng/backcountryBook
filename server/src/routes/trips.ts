@@ -4,6 +4,7 @@ import url from "url";
 import { checkJwt } from "../auth/auth";
 
 import { collections as db } from "../database/databaseSetup";
+import { sendCommentNotification, sendEmail } from "../services/emailService";
 import { deleteImage } from "../services/imageService";
 import { resolvePeaks } from "../services/peakService";
 import { resolveCommentUsers } from "../services/tripService";
@@ -87,12 +88,14 @@ router.post("/trip/comment", checkJwt, async (req: any, res) => {
     .findOneAndUpdate({ _id: new ObjectID(tripId) }, { $addToSet: { comments: comment } }, { returnOriginal: false })
     .catch((e) => console.error(e));
   if (!doc) return res.status(500).json("Something went wrong:(");
+  const trip = doc.value;
   try {
-    await resolveCommentUsers(doc.value);
+    await resolveCommentUsers(trip);
   } catch (e) {
     console.error("Something went wrong when resolving comment users", e);
   }
-  res.status(200).json(doc.value);
+  sendCommentNotification(trip);
+  res.status(200).json(trip);
 });
 
 router.delete("/trip", checkJwt, async (req: any, res) => {
