@@ -205,20 +205,22 @@ const TripCard = ({ trip, setTripToEdit, setShowModal }: IProps) => {
               <p className="pl-2 mb-2">{comment.text}</p>
             </div>
           ))}
-          <div className="input-group p-2">
-            <input
-              className="form-control form-control-sm"
-              type={"text"}
-              placeholder="Comment..."
-              value={currentComment}
-              onChange={handleInputChange}
-            ></input>
-            <div className="input-group-append" onClick={saveComment}>
-              <span className="input-group-text text-primary btn">
-                <FaIcon icon={faCheck} />
-              </span>
+          {user && (
+            <div className="input-group p-2">
+              <input
+                className="form-control form-control-sm"
+                type={"text"}
+                placeholder="Comment..."
+                value={currentComment}
+                onChange={handleInputChange}
+              ></input>
+              <div className="input-group-append" onClick={saveComment}>
+                <span className="input-group-text text-primary btn">
+                  <FaIcon icon={faCheck} />
+                </span>
+              </div>
             </div>
-          </div>
+          )}
         </>
       )}
     </Card>
