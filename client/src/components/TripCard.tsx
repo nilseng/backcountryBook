@@ -175,10 +175,17 @@ const TripCard = ({ trip, setTripToEdit, setShowModal }: IProps) => {
         ))}
       {trip.description && <pre className="p text-light mt-2 ml-1 mb-0">{trip.description}</pre>}
       <span className="w-100 d-flex justify-content-between">
-        <button className="btn text-light" style={{ boxShadow: "none" }} onClick={() => setShowComments((val) => !val)}>
-          <FaIcon icon={faComments} />
-        </button>
-        <span>
+        <span className="d-flex align-items-center">
+          <button
+            className="btn text-light"
+            style={{ boxShadow: "none" }}
+            onClick={() => setShowComments((val) => !val)}
+          >
+            <FaIcon icon={faComments} />
+          </button>
+          <p className="text-muted small mb-0 pr-2">{comments?.length ?? trip.comments?.length}</p>
+        </span>
+        <span className="d-flex align-items-center">
           <Button variant="link" className="px-3" style={{ boxShadow: "none" }}>
             <FaIcon
               icon={likes || (user?.sub && trip.likedByUsers?.includes(user?.sub)) ? fullHeart : emptyHeart}
@@ -186,7 +193,7 @@ const TripCard = ({ trip, setTripToEdit, setShowModal }: IProps) => {
               onClick={like}
             />
           </Button>
-          {likes || trip.likes ? <p className="small mb-0">{(trip.likes || 0) + likes}</p> : null}
+          {likes || trip.likes ? <p className="text-muted small mb-0 pr-2">{(trip.likes || 0) + likes}</p> : null}
         </span>
       </span>
       {showComments && (
