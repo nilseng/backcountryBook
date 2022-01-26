@@ -1,7 +1,7 @@
 import { IdToken } from "@auth0/auth0-react";
 import { useEffect, useState } from "react";
 
-import { ITrip } from "../models/Trip";
+import { IComment, ITrip } from "../models/Trip";
 import { isError } from "../utils/errorHandling";
 
 const getTrips = async (
@@ -12,9 +12,9 @@ const getTrips = async (
   userId?: string
 ) => {
   if (setIsLoading) setIsLoading(true);
-  const res = await fetch(
-    `/api/trips?limit=${limit}&offset=${offset}&userId=${userId ?? ""}`
-  ).catch((e) => ({ error: e }));
+  const res = await fetch(`/api/trips?limit=${limit}&offset=${offset}&userId=${userId ?? ""}`).catch((e) => ({
+    error: e,
+  }));
   if (isError(res)) return;
   const trips = await (res as Response).json();
   setTrips((t: ITrip[]) => (t ? [...t, ...trips] : trips));
@@ -75,11 +75,7 @@ export const deleteTrip = async (token: IdToken, trip: ITrip) => {
   return res.json();
 };
 
-export const likeTrip = async (
-  tripId: string,
-  likes: React.MutableRefObject<number>,
-  token: IdToken
-) => {
+export const likeTrip = async (tripId: string, likes: React.MutableRefObject<number>, token: IdToken) => {
   fetch(`/api/trip/like`, {
     method: "POST",
     headers: {
@@ -89,4 +85,16 @@ export const likeTrip = async (
     body: JSON.stringify({ tripId, likes: likes.current }),
   }).catch((e) => ({ error: e }));
   likes.current = 0;
+};
+
+export const commentTrip = async (tripId: string, comment: IComment, token: IdToken) => {
+  const savedComment = await fetch(`/api/trip/comment`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token.__raw}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ tripId, comment }),
+  }).catch((e) => console.error(e));
+  return savedComment ? savedComment.json() : savedComment;
 };
