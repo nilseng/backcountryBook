@@ -11,7 +11,7 @@ import { faComments, faHeart as emptyHeart } from "@fortawesome/free-regular-svg
 
 import { IComment, ITrip } from "../models/Trip";
 import "../styles/Card.scss";
-import { getBounds, getRoute } from "../services/routeService";
+import { useRoute } from "../services/routeService";
 import Peakmap from "./Peakmap";
 import ImagePlaceholder from "./ImagePlaceholder";
 import { debounce } from "lodash";
@@ -25,15 +25,11 @@ interface IProps {
   setShowModal: any;
 }
 
-const routeMargin = 0.002;
-
 const TripCard = ({ trip, setTripToEdit, setShowModal }: IProps) => {
   const { user, loginWithRedirect, getIdTokenClaims } = useAuth0();
 
   const history = useHistory();
 
-  const [route, setRoute] = useState();
-  const [bounds, setBounds] = useState<[number, number, number, number]>();
   const [images, setImages] = useState<any[]>([]);
   const [showComments, setShowComments] = useState<boolean>(false);
   const [currentComment, setCurrentComment] = useState<string>("");
@@ -72,27 +68,7 @@ const TripCard = ({ trip, setTripToEdit, setShowModal }: IProps) => {
     setCurrentComment("");
   };
 
-  useEffect(() => {
-    if (trip.routeId) {
-      getRoute(trip.routeId).then((res) => {
-        if (!res?.features || !res.features[0]?.geometry?.coordinates) return;
-        try {
-          const boundsObject = getBounds(res?.features[0]?.geometry?.coordinates);
-          setBounds([
-            boundsObject.xMin - routeMargin,
-            boundsObject.yMin - routeMargin,
-            boundsObject.xMax + routeMargin,
-            boundsObject.yMax + routeMargin,
-          ]);
-          setRoute(res);
-        } catch (e) {
-          console.error(`Failed setting route for trip w id ${trip._id} and name ${trip.name}.`);
-        }
-      });
-    } else {
-      setRoute(undefined);
-    }
-  }, [trip]);
+  const { route, bounds } = useRoute(trip.routeId);
 
   useEffect(() => {
     if (trip.imageIds && trip.imageIds.length > 0) {

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import mapboxgl from "mapbox-gl";
+import mapboxgl, { LngLatBoundsLike } from "mapbox-gl";
 
 import { IPeak } from "../models/Peak";
 import Map3DControl from "../utils/Map3DControl";
@@ -21,7 +21,7 @@ interface IProps {
   route?: any;
   height?: string;
   width?: string;
-  bounds?: [number, number, number, number];
+  bounds?: LngLatBoundsLike;
   _3d?: boolean;
   noZoom?: boolean;
   interactive?: boolean;

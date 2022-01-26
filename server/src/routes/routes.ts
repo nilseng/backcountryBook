@@ -48,25 +48,18 @@ router.post("/route/geojson", checkJwt, async (req: any, res: any) => {
     : res.status(500).json("Geojson upload failed.");
 });
 
-router.post(
-  "/mapbox/upload",
-  checkJwt,
-  upload.array("gpx"),
-  async (req, res) => {
-    if (!req.files || req.files.length === 0) {
-      return res.status(400).json({ message: "No gpx file found" });
-    }
-    const file = (req.files as Express.Multer.File[])[0];
-    const body = req.body;
-    if (!body.id) return res.status(400).json("Route id missing");
-    const uploadRes = await createMapboxUpload(body.id, file.buffer).catch(
-      (e) => ({ error: e })
-    );
-    return isError(uploadRes)
-      ? res.status(500).json("Could not perform mapbox upload")
-      : res.status(200).send("Mapbox upload initiated.");
+router.post("/mapbox/upload", checkJwt, upload.array("gpx"), async (req, res) => {
+  if (!req.files || req.files.length === 0) {
+    return res.status(400).json({ message: "No gpx file found" });
   }
-);
+  const file = (req.files as Express.Multer.File[])[0];
+  const body = req.body;
+  if (!body.id) return res.status(400).json("Route id missing");
+  const uploadRes = await createMapboxUpload(body.id, file.buffer).catch((e) => ({ error: e }));
+  return isError(uploadRes)
+    ? res.status(500).json("Could not perform mapbox upload")
+    : res.status(200).send("Mapbox upload initiated.");
+});
 
 router.get("/mapbox/uploads", async (req, res) => {
   const uploads = await listUploads();
@@ -85,19 +78,14 @@ router.delete("/route/:routeId", checkJwt, async (req: any, res: any) => {
   });
 });
 
-router.post(
-  "/route/gpxtogeojson",
-  checkJwt,
-  upload.array("gpx"),
-  (req: any, res: any) => {
-    if (!req.files || req.files.length === 0) {
-      return res.status(400).json({ message: "No file found" });
-    }
-    const gpxString = req.files[0].buffer.toString();
-    const gpx = new DOMParser().parseFromString(gpxString);
-    const geojson = tj.gpx(gpx);
-    res.status(200).json(geojson);
+router.post("/route/gpxtogeojson", checkJwt, upload.array("gpx"), (req: any, res: any) => {
+  if (!req.files || req.files.length === 0) {
+    return res.status(400).json({ message: "No file found" });
   }
-);
+  const gpxString = req.files[0].buffer.toString();
+  const gpx = new DOMParser().parseFromString(gpxString);
+  const geojson = tj.gpx(gpx);
+  res.status(200).json(geojson);
+});
 
 module.exports = router;
