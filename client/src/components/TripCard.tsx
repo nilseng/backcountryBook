@@ -151,42 +151,48 @@ const TripCard = ({ trip, setTripToEdit, setShowModal }: IProps) => {
         </div>
         {trip.name && <Card.Title className="mb-0">{trip.name}</Card.Title>}
       </div>
-      <div className="card-image-container">
-        {!images && <ImagePlaceholder />}
-        {images && images.length > 0 ? (
-          <Carousel
-            className="h-100"
-            interval={null}
-            indicators={images.length > 1}
-            controls={images.length > 1}
-          >
-            {images.map((image, i) => (
-              <Carousel.Item key={i}>
-                <Image
-                  className="card-image rounded-0 pb-2"
-                  src={image}
-                  rounded
+      {trip?.imageIds?.length > 0 && (
+        <div className="card-image-container">
+          {(!images || images.length === 0) && <ImagePlaceholder />}
+          {images && images.length > 0 ? (
+            <Carousel
+              className="h-100"
+              interval={null}
+              indicators={images.length > 1}
+              controls={images.length > 1}
+            >
+              {images.map((image, i) => (
+                <Carousel.Item key={i}>
+                  <Image
+                    className="card-image rounded-0 pb-2"
+                    src={image}
+                    rounded
+                  />
+                </Carousel.Item>
+              ))}
+            </Carousel>
+          ) : null}
+        </div>
+      )}
+      {trip?.routeId && (
+        <div style={{ height: "20rem" }}>
+          {route && (
+            <div
+              style={{ cursor: "pointer" }}
+              onClick={() => history.push(`/peaks?routeId=${trip.routeId}`)}
+            >
+              <ErrorBoundary {...{ message: "Could not load map... :(" }}>
+                <Peakmap
+                  route={route}
+                  height="20rem"
+                  width="auto"
+                  bounds={bounds}
+                  _3d={false}
+                  interactive={false}
                 />
-              </Carousel.Item>
-            ))}
-          </Carousel>
-        ) : null}
-      </div>
-      {route && (
-        <div
-          style={{ cursor: "pointer" }}
-          onClick={() => history.push(`/peaks?routeId=${trip.routeId}`)}
-        >
-          <ErrorBoundary {...{ message: "Could not load map... :(" }}>
-            <Peakmap
-              route={route}
-              height="20rem"
-              width="auto"
-              bounds={bounds}
-              _3d={false}
-              interactive={false}
-            />
-          </ErrorBoundary>
+              </ErrorBoundary>
+            </div>
+          )}
         </div>
       )}
       {trip.peaks &&
