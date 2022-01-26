@@ -58,7 +58,6 @@ const TripCard = ({ trip, setTripToEdit, setShowModal }: IProps) => {
   };
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.value) return;
     setCurrentComment(e.target.value);
   };
 
