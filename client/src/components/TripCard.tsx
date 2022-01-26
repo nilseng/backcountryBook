@@ -185,15 +185,15 @@ const TripCard = ({ trip, setTripToEdit, setShowModal }: IProps) => {
           </button>
           <p className="text-muted small mb-0 pr-2">{comments?.length ?? trip.comments?.length}</p>
         </span>
-        <span className="d-flex align-items-center">
-          <Button variant="link" className="px-3" style={{ boxShadow: "none" }}>
+        <span className="d-flex align-items-center px-3">
+          {likes || trip.likes ? <p className="text-muted small mb-0">{(trip.likes || 0) + likes}</p> : null}
+          <Button variant="link" className="px-1" style={{ boxShadow: "none" }}>
             <FaIcon
               icon={likes || (user?.sub && trip.likedByUsers?.includes(user?.sub)) ? fullHeart : emptyHeart}
               style={{ cursor: "pointer" }}
               onClick={like}
             />
           </Button>
-          {likes || trip.likes ? <p className="text-muted small mb-0 pr-2">{(trip.likes || 0) + likes}</p> : null}
         </span>
       </span>
       {showComments && (
