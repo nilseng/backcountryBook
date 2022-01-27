@@ -18,7 +18,7 @@ interface IProps {
   defaultPeak?: IPeak;
   setShowModal?: any;
   focusPeak?: IPeak;
-  route?: any;
+  route?: GeoJSON.FeatureCollection;
   height?: string;
   width?: string;
   bounds?: LngLatBoundsLike;

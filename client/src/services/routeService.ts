@@ -1,5 +1,5 @@
 import { IdToken } from "@auth0/auth0-react";
-import { GeoJSONSourceRaw, LngLatBoundsLike } from "mapbox-gl";
+import { LngLatBoundsLike } from "mapbox-gl";
 import { useEffect, useState } from "react";
 
 const routeMargin = 0.002;
@@ -13,7 +13,7 @@ export const getRoute = async (id: string) => {
 };
 
 export const useRoute = (routeId?: string | null) => {
-  const [route, setRoute] = useState<GeoJSONSourceRaw>();
+  const [route, setRoute] = useState<GeoJSON.FeatureCollection>();
   const [bounds, setBounds] = useState<LngLatBoundsLike>();
 
   useEffect(() => {
