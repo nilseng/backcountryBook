@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
 import Card from "react-bootstrap/Card";
 import Carousel from "react-bootstrap/Carousel";
@@ -6,7 +6,7 @@ import Image from "react-bootstrap/Image";
 import Button from "react-bootstrap/Button";
 import { useAuth0 } from "@auth0/auth0-react";
 import { FontAwesomeIcon as FaIcon } from "@fortawesome/react-fontawesome";
-import { faMountain, faPen, faHeart as fullHeart, faCrown, faCheck } from "@fortawesome/free-solid-svg-icons";
+import { faMountain, faPen, faHeart as fullHeart, faCrown } from "@fortawesome/free-solid-svg-icons";
 import { faComments, faHeart as emptyHeart } from "@fortawesome/free-regular-svg-icons";
 
 import { IComment, ITrip } from "../models/Trip";
@@ -15,9 +15,11 @@ import { useRoute } from "../services/routeService";
 import Peakmap from "./Peakmap";
 import ImagePlaceholder from "./ImagePlaceholder";
 import { debounce } from "lodash";
-import { commentTrip, likeTrip } from "../services/tripService";
+import { likeTrip } from "../services/tripService";
 import { ErrorBoundary } from "./ErrorBoundary";
 import { formatDate } from "../utils/dateFunctions";
+import { useTripImages } from "../services/imageService";
+import { TripComments } from "./TripComments";
 
 interface IProps {
   trip: ITrip;
@@ -30,10 +32,9 @@ const TripCard = ({ trip, setTripToEdit, setShowModal }: IProps) => {
 
   const history = useHistory();
 
-  const [images, setImages] = useState<any[]>([]);
   const [showComments, setShowComments] = useState<boolean>(false);
-  const [currentComment, setCurrentComment] = useState<string>("");
   const [comments, setComments] = useState<IComment[]>();
+
   const [likes, setLikes] = useState<number>(0);
   const unsavedLikes = useRef<number>(0);
   const debouncedLikeTrip = useRef(debounce(likeTrip, 250, { leading: false }));
@@ -53,38 +54,9 @@ const TripCard = ({ trip, setTripToEdit, setShowModal }: IProps) => {
     if (!user) loginWithRedirect({ screen_hint: "signup" });
   };
 
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setCurrentComment(e.target.value);
-  };
-
-  const saveComment = async () => {
-    if (!trip._id) return console.error("Trip id not defined");
-    const token = await getIdTokenClaims();
-    const comment: IComment = {
-      text: currentComment,
-    };
-    const savedTrip = await commentTrip(trip._id, comment, token);
-    setComments(savedTrip.comments);
-    setCurrentComment("");
-  };
-
   const { route, bounds } = useRoute(trip.routeId);
 
-  useEffect(() => {
-    if (trip.imageIds && trip.imageIds.length > 0) {
-      const imgs: any[] = [];
-      for (const id of trip.imageIds) {
-        fetch(`/api/image/${id}`).then(async (res) => {
-          const imageBlob = await res.blob();
-          const imageUrl = URL.createObjectURL(imageBlob);
-          const length = imgs.push(imageUrl);
-          if (length === trip.imageIds.length) setImages(imgs);
-        });
-      }
-    } else {
-      setImages([]);
-    }
-  }, [trip.imageIds]);
+  const images = useTripImages(trip.imageIds);
 
   return (
     <Card className="card my-1" bg="dark">
@@ -172,33 +144,7 @@ const TripCard = ({ trip, setTripToEdit, setShowModal }: IProps) => {
           </Button>
         </span>
       </span>
-      {showComments && (
-        <>
-          {(comments ?? trip.comments)?.map((comment, i) => (
-            <div key={i} className="small px-2">
-              <p className="m-0">{comment.user?.name}</p>
-              <p className="text-muted m-0">{formatDate(comment.createdAt)}</p>
-              <p className="pl-2 mb-2">{comment.text}</p>
-            </div>
-          ))}
-          {user && (
-            <div className="input-group p-2">
-              <input
-                className="form-control form-control-sm"
-                type={"text"}
-                placeholder="Comment..."
-                value={currentComment}
-                onChange={handleInputChange}
-              ></input>
-              <div className="input-group-append" onClick={saveComment}>
-                <span className="input-group-text text-primary btn">
-                  <FaIcon icon={faCheck} />
-                </span>
-              </div>
-            </div>
-          )}
-        </>
-      )}
+      {showComments && <TripComments trip={trip} comments={comments} setComments={setComments} />}
     </Card>
   );
 };

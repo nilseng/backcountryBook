@@ -4,10 +4,7 @@ import { resolveUser } from "./userService";
 sendgrid.setApiKey(process.env.SG_KEY || "");
 
 export const sendEmail = async (msg: MailDataRequired) => {
-  sendgrid
-    .send(msg)
-    .then((_) => console.log("Email sent"))
-    .catch((e) => console.error(e));
+  sendgrid.send(msg).catch((e) => console.error(e));
 };
 
 export const sendCommentNotification = (trip: any) => {
