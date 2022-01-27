@@ -1,8 +1,6 @@
 import React, { useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
 import Card from "react-bootstrap/Card";
-import Carousel from "react-bootstrap/Carousel";
-import Image from "react-bootstrap/Image";
 import Button from "react-bootstrap/Button";
 import { useAuth0 } from "@auth0/auth0-react";
 import { FontAwesomeIcon as FaIcon } from "@fortawesome/react-fontawesome";
@@ -13,13 +11,12 @@ import { IComment, ITrip } from "../models/Trip";
 import "../styles/Card.scss";
 import { useRoute } from "../services/routeService";
 import Peakmap from "./Peakmap";
-import ImagePlaceholder from "./ImagePlaceholder";
 import { debounce } from "lodash";
 import { likeTrip } from "../services/tripService";
 import { ErrorBoundary } from "./ErrorBoundary";
 import { formatDate } from "../utils/dateFunctions";
-import { useTripImages } from "../services/imageService";
 import { TripComments } from "./TripComments";
+import { TripImages } from "./TripImages";
 
 interface IProps {
   trip: ITrip;
@@ -32,17 +29,17 @@ const TripCard = ({ trip, setTripToEdit, setShowModal }: IProps) => {
 
   const history = useHistory();
 
+  const onEdit = () => {
+    setTripToEdit(trip);
+    setShowModal(true);
+  };
+
   const [showComments, setShowComments] = useState<boolean>(false);
   const [comments, setComments] = useState<IComment[]>();
 
   const [likes, setLikes] = useState<number>(0);
   const unsavedLikes = useRef<number>(0);
   const debouncedLikeTrip = useRef(debounce(likeTrip, 250, { leading: false }));
-
-  const onEdit = () => {
-    setTripToEdit(trip);
-    setShowModal(true);
-  };
 
   const like = async () => {
     if (trip._id && user) {
@@ -55,8 +52,6 @@ const TripCard = ({ trip, setTripToEdit, setShowModal }: IProps) => {
   };
 
   const { route, bounds } = useRoute(trip.routeId);
-
-  const images = useTripImages(trip.imageIds);
 
   return (
     <Card className="card my-1" bg="dark">
@@ -83,20 +78,7 @@ const TripCard = ({ trip, setTripToEdit, setShowModal }: IProps) => {
         </div>
         {trip.name && <Card.Title className="mb-0">{trip.name}</Card.Title>}
       </div>
-      {trip?.imageIds?.length > 0 && (
-        <div className="card-image-container">
-          {(!images || images.length === 0) && <ImagePlaceholder />}
-          {images && images.length > 0 ? (
-            <Carousel className="h-100" interval={null} indicators={images.length > 1} controls={images.length > 1}>
-              {images.map((image, i) => (
-                <Carousel.Item key={i}>
-                  <Image className="card-image rounded-0 pb-2" src={image} rounded />
-                </Carousel.Item>
-              ))}
-            </Carousel>
-          ) : null}
-        </div>
-      )}
+      <TripImages trip={trip} />
       {trip?.routeId && (
         <div style={{ height: "20rem" }}>
           {route && (
