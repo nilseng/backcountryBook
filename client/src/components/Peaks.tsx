@@ -6,15 +6,13 @@ import Loading from "./Loading";
 import PeakModal from "./PeakModal";
 import Peakmap from "./Peakmap";
 import { useLocation } from "react-router-dom";
-import { getBounds, getRoute } from "../services/routeService";
+import { useRoute } from "../services/routeService";
 import { ErrorBoundary } from "./ErrorBoundary";
 
 const defaultPeak: IPeak = {
   name: "",
   height: undefined,
 };
-
-const routeMargin = 0.02;
 
 const Peaks = () => {
   const [isLoadingPeaks, setIsLoadingPeaks] = useState(false);
@@ -27,8 +25,6 @@ const Peaks = () => {
   const [focusPeak, setFocusPeak] = useState<IPeak>();
 
   const [routeId, setRouteId] = useState<string>();
-  const [focusRoute, setFocusRoute] = useState<any>();
-  const [bounds, setBounds] = useState<[number, number, number, number]>();
 
   useEffect(() => {
     setIsLoadingPeaks(true);
@@ -70,24 +66,7 @@ const Peaks = () => {
     }
   }, [query, routeId]);
 
-  useEffect(() => {
-    if (routeId) {
-      getRoute(routeId)
-        .then((res) => {
-          const boundsObject = getBounds(
-            res?.features[0]?.geometry?.coordinates
-          );
-          setBounds([
-            boundsObject.xMin - routeMargin,
-            boundsObject.yMin - routeMargin,
-            boundsObject.xMax + routeMargin,
-            boundsObject.yMax + routeMargin,
-          ]);
-          setFocusRoute(res);
-        })
-        .catch((e) => console.error(e));
-    }
-  }, [routeId]);
+  const { route, bounds } = useRoute(routeId);
 
   if (isLoadingPeaks)
     return (
@@ -98,16 +77,14 @@ const Peaks = () => {
 
   return peaks ? (
     <>
-      <ErrorBoundary
-        {...{ message: "Could not load map... :( Try a refresh." }}
-      >
+      <ErrorBoundary {...{ message: "Could not load map... :( Try a refresh." }}>
         <Peakmap
           setPeak={setPeak}
           peaks={peaks}
           defaultPeak={defaultPeak}
           setShowModal={setShowModal}
           focusPeak={focusPeak}
-          route={focusRoute}
+          route={route}
           bounds={bounds}
           _3d={true}
           hasGeoLocationControl={true}
