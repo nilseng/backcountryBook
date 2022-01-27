@@ -118,7 +118,7 @@ const Peakmap = ({
       setMap(
         new mapboxgl.Map({
           container: mapEl.current,
-          style: "mapbox://styles/mapbox/outdoors-v10",
+          style: "mapbox://styles/mapbox/outdoors-v11",
           zoom: 1,
           center: [0, 20],
           bounds,
