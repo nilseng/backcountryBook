@@ -4,7 +4,7 @@ import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
 import { useAuth0 } from "@auth0/auth0-react";
 import { FontAwesomeIcon as FaIcon } from "@fortawesome/react-fontawesome";
-import { faMountain, faPen, faHeart as fullHeart, faCrown } from "@fortawesome/free-solid-svg-icons";
+import { faMountain, faHeart as fullHeart } from "@fortawesome/free-solid-svg-icons";
 import { faComments, faHeart as emptyHeart } from "@fortawesome/free-regular-svg-icons";
 
 import { IComment, ITrip } from "../models/Trip";
@@ -14,9 +14,9 @@ import Peakmap from "./Peakmap";
 import { debounce } from "lodash";
 import { likeTrip } from "../services/tripService";
 import { ErrorBoundary } from "./ErrorBoundary";
-import { formatDate } from "../utils/dateFunctions";
 import { TripComments } from "./TripComments";
 import { TripImages } from "./TripImages";
+import { TripHeading } from "./TripHeading";
 
 interface IProps {
   trip: ITrip;
@@ -55,29 +55,7 @@ const TripCard = ({ trip, setTripToEdit, setShowModal }: IProps) => {
 
   return (
     <Card className="card my-1" bg="dark">
-      <div className="p-1">
-        <div className="d-flex justify-content-between">
-          <div>
-            {trip?.tripDate ? (
-              <p className="small mb-0">{formatDate(trip.tripDate)}</p>
-            ) : (
-              <p className="small mb-0">{formatDate(trip.createdAt)}</p>
-            )}
-            {trip.user && (
-              <span className="small text-muted">
-                {trip.user.name}
-                {trip.user.level === "Founder" && <FaIcon icon={faCrown} className="text-warning ml-2" />}
-              </span>
-            )}
-          </div>
-          {user && user.sub === trip.sub && (
-            <Button variant="link" onClick={onEdit}>
-              <FaIcon icon={faPen} className="text-muted"></FaIcon>
-            </Button>
-          )}
-        </div>
-        {trip.name && <Card.Title className="mb-0">{trip.name}</Card.Title>}
-      </div>
+      <TripHeading trip={trip} onEdit={onEdit} />
       <TripImages trip={trip} />
       {trip?.routeId && (
         <div style={{ height: "20rem" }}>
