@@ -6,7 +6,7 @@ import { isError } from "../utils/errorHandling";
 
 const getTrip = async (_id: string): Promise<ITrip | undefined> => {
   const res = await fetch(`/api/trip/${_id}`).catch((e) => console.error("getTrip failed."));
-  return res?.json();
+  return res ? res?.json() : res;
 };
 
 export const useTrip = (_id?: string | null) => {
