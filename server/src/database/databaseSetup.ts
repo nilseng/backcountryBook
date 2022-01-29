@@ -14,9 +14,7 @@ export const connectToMongoDb = async () => {
     useUnifiedTopology: true,
   });
 
-  console.log(
-    `Mongoclient connected to database server:${client.isConnected()}`
-  );
+  console.log(`Mongoclient connected to database server:${client.isConnected()}`);
 
   // Retrieving mongodb collections
   collections.users = client.db().collection("users");
