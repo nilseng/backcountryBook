@@ -5,9 +5,9 @@ import { getPeaks } from "../services/peakService";
 import Loading from "./Loading";
 import PeakModal from "./PeakModal";
 import Peakmap from "./Peakmap";
-import { useLocation } from "react-router-dom";
 import { useRoute } from "../services/routeService";
 import { ErrorBoundary } from "./ErrorBoundary";
+import { useQueryParam } from "../utils/useQuery";
 
 const defaultPeak: IPeak = {
   name: "",
@@ -24,8 +24,6 @@ const Peaks = () => {
 
   const [focusPeak, setFocusPeak] = useState<IPeak>();
 
-  const [routeId, setRouteId] = useState<string>();
-
   useEffect(() => {
     setIsLoadingPeaks(true);
     getPeaks()
@@ -38,19 +36,8 @@ const Peaks = () => {
       });
   }, [setPeaks]);
 
-  const useQuery = () => {
-    return new URLSearchParams(useLocation()?.search);
-  };
-
-  const query = useQuery();
-  const [peakId, setPeakId] = useState<string>();
-
-  useEffect(() => {
-    if (query) {
-      const peakId = query.get("peakId");
-      if (peakId) setPeakId(peakId);
-    }
-  }, [query, peakId]);
+  const peakId = useQueryParam("peakId");
+  const routeId = useQueryParam("routeId");
 
   useEffect(() => {
     if (peakId && peaks) {
@@ -58,13 +45,6 @@ const Peaks = () => {
       setFocusPeak(p);
     }
   }, [peakId, peaks]);
-
-  useEffect(() => {
-    if (query) {
-      const routeId = query.get("routeId");
-      if (routeId) setRouteId(routeId);
-    }
-  }, [query, routeId]);
 
   const { route, bounds } = useRoute(routeId);
 
