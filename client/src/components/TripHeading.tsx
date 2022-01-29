@@ -11,7 +11,7 @@ export const TripHeading = ({ trip, onEdit }: { trip: ITrip; onEdit: () => void 
   const history = useHistory();
 
   return (
-    <div className="p-1" style={{ cursor: "pointer" }}>
+    <div className="p-1">
       <div className="d-flex justify-content-between">
         <div>
           {trip?.tripDate ? (
@@ -33,7 +33,11 @@ export const TripHeading = ({ trip, onEdit }: { trip: ITrip; onEdit: () => void 
         )}
       </div>
       {trip.name && (
-        <Card.Title className="mb-0" onClick={() => history.push(`/trip-details?tripId=${trip._id}`)}>
+        <Card.Title
+          className="mb-0"
+          style={{ cursor: "pointer" }}
+          onClick={() => history.push(`/trip-details?tripId=${trip._id}`)}
+        >
           {trip.name}
         </Card.Title>
       )}
