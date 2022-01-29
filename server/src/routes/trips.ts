@@ -51,7 +51,9 @@ router.get("/trip/:id", async (req, res) => {
   const _id = req.params.id;
   if (!_id) return res.status(400).json("Trip id missing");
   const trip = await getTrip(_id);
-  return trip ? res.status(200).json(trip) : res.status(404).json("trip not found.");
+  if (!trip) return res.status(404).json("trip not found.");
+  await resolveCommentUsers(trip);
+  res.status(200).json(trip);
 });
 
 router.post("/trip", checkJwt, async (req: any, res) => {
