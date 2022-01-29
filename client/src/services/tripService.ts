@@ -4,6 +4,27 @@ import { useEffect, useState } from "react";
 import { IComment, ITrip } from "../models/Trip";
 import { isError } from "../utils/errorHandling";
 
+const getTrip = async (_id: string): Promise<ITrip | undefined> => {
+  const res = await fetch(`/api/trip/${_id}`).catch((e) => console.error("getTrip failed."));
+  return res?.json();
+};
+
+export const useTrip = (_id?: string | null) => {
+  const [trip, setTrip] = useState<ITrip>();
+
+  useEffect(() => {
+    if (_id) {
+      getTrip(_id).then((t) => {
+        if (t) setTrip(t);
+      });
+    }
+
+    return () => setTrip(undefined);
+  }, [_id]);
+
+  return trip;
+};
+
 const getTrips = async (
   setTrips: Function,
   setIsLoading?: Function,
@@ -18,7 +39,7 @@ const getTrips = async (
   if (isError(res)) return;
   const trips = await (res as Response).json();
   setTrips((t: ITrip[]) => (t ? [...t, ...trips] : trips));
-  if (setIsLoading) setTimeout(() => setIsLoading(false), 1000);
+  if (setIsLoading) setIsLoading(false);
 };
 
 export const useGetTrips = (

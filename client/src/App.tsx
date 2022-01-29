@@ -13,6 +13,7 @@ import { Welcome } from "./components/Welcome";
 import { useAuth0 } from "@auth0/auth0-react";
 import Loading from "./components/Loading";
 import { useGetTrips } from "./services/tripService";
+import { TripDetails } from "./components/TripDetails";
 
 const defaultTrip: ITrip = {
   name: "",
@@ -65,6 +66,10 @@ const App = () => {
                   setShowModal={setShowModal}
                 />
               )}
+            />
+            <Route
+              path="/trip-details"
+              render={() => <TripDetails setTripToEdit={setTrip} setShowModal={setShowModal} />}
             />
             <Route path="/peaks" component={Peaks} />
             <PrivateRoute

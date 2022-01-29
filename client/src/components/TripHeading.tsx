@@ -2,14 +2,16 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { faCrown, faPen } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Card, Button } from "react-bootstrap";
+import { useHistory } from "react-router-dom";
 import { ITrip } from "../models/Trip";
 import { formatDate } from "../utils/dateFunctions";
 
 export const TripHeading = ({ trip, onEdit }: { trip: ITrip; onEdit: () => void }) => {
   const { user } = useAuth0();
+  const history = useHistory();
 
   return (
-    <div className="p-1">
+    <div className="p-1" style={{ cursor: "pointer" }}>
       <div className="d-flex justify-content-between">
         <div>
           {trip?.tripDate ? (
@@ -30,7 +32,11 @@ export const TripHeading = ({ trip, onEdit }: { trip: ITrip; onEdit: () => void 
           </Button>
         )}
       </div>
-      {trip.name && <Card.Title className="mb-0">{trip.name}</Card.Title>}
+      {trip.name && (
+        <Card.Title className="mb-0" onClick={() => history.push(`/trip-details?tripId=${trip._id}`)}>
+          {trip.name}
+        </Card.Title>
+      )}
     </div>
   );
 };

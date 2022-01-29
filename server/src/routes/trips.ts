@@ -7,8 +7,8 @@ import { collections as db } from "../database/databaseSetup";
 import { sendCommentNotification, sendEmail } from "../services/emailService";
 import { deleteImage } from "../services/imageService";
 import { resolvePeaks } from "../services/peakService";
-import { resolveCommentUsers } from "../services/tripService";
-import { resolveUser, updateUser } from "../services/userService";
+import { getTrip, resolveCommentUsers } from "../services/tripService";
+import { getUser, updateUser } from "../services/userService";
 import { isError } from "../utils/errorHandling";
 
 const router = express.Router();
@@ -40,11 +40,18 @@ router.get("/trips", async (req: any, res) => {
     .catch((e) => console.error(e));
   if (!trips) return res.status(500).json([]);
   for (let trip of trips) {
-    trip.user = await resolveUser(trip.sub);
+    trip.user = await getUser(trip.sub);
     if (trip.peakIds) trip.peaks = await resolvePeaks(trip.peakIds);
     await resolveCommentUsers(trip);
   }
   res.status(200).json(trips);
+});
+
+router.get("/trip/:id", async (req, res) => {
+  const _id = req.params.id;
+  if (!_id) return res.status(400).json("Trip id missing");
+  const trip = await getTrip(_id);
+  return trip ? res.status(200).json(trip) : res.status(404).json("trip not found.");
 });
 
 router.post("/trip", checkJwt, async (req: any, res) => {
@@ -94,7 +101,7 @@ router.post("/trip/comment", checkJwt, async (req: any, res) => {
   } catch (e) {
     console.error("Something went wrong when resolving comment users", e);
   }
-  sendCommentNotification(trip);
+  sendCommentNotification(trip, req.user, comment);
   res.status(200).json(trip);
 });
 
