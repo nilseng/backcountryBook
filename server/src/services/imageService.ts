@@ -29,6 +29,7 @@ export const compressImage = async (buffer: Buffer): Promise<Buffer> => {
   const compressedImg = await sharp(buffer)
     .withMetadata()
     .webp({ quality: imageQuality })
+    .rotate()
     .resize(maxImageWidth)
     .toBuffer();
   return compressedImg;
