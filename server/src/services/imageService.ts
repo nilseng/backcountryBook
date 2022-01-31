@@ -27,9 +27,9 @@ export const deleteImage = (_id: string) => {
 
 export const compressImage = async (buffer: Buffer): Promise<Buffer> => {
   const compressedImg = await sharp(buffer)
+    .withMetadata()
     .webp({ quality: imageQuality })
     .resize(maxImageWidth)
-    .withMetadata()
     .toBuffer();
   return compressedImg;
 };
@@ -54,10 +54,7 @@ export const compressAllImages = (): void => {
       }
       s3.getObject({ ...params, Key: imgRef.Key }, (err, data) => {
         if (err || !imgRef.Key || !data.Body) {
-          console.log(
-            "Something went wrong when retrieving object with key ",
-            imgRef.Key
-          );
+          console.log("Something went wrong when retrieving object with key ", imgRef.Key);
         } else {
           updateImage(imgRef.Key, data.Body);
         }
