@@ -1,4 +1,7 @@
 import db, { Collection } from "mongodb";
+import { IPeak } from "../models/Peak";
+import { ITrip } from "../models/Trip";
+import { IUser } from "../models/User";
 
 export const collections: {
   [key: string]: Collection;
@@ -17,9 +20,9 @@ export const connectToMongoDb = async () => {
   console.log(`Mongoclient connected to database server:${client.isConnected()}`);
 
   // Retrieving mongodb collections
-  collections.users = client.db().collection("users");
-  collections.peaks = client.db().collection("peaks");
-  collections.trips = client.db().collection("trips");
+  collections.users = client.db().collection<IUser>("users");
+  collections.peaks = client.db().collection<IPeak>("peaks");
+  collections.trips = client.db().collection<ITrip>("trips");
   collections.ascents = client.db().collection("ascents");
   collections.bucketlist = client.db().collection("bucketlist");
   collections.images = client.db().collection("images");

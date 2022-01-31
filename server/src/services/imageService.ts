@@ -14,6 +14,18 @@ const params = {
 const imageQuality = 100;
 const maxImageWidth = 1200;
 
+export const getImage = async (Key: string, Bucket = defaultBucket) => {
+  const params: aws.S3.GetObjectRequest = {
+    Bucket,
+    Key,
+  };
+  const data = await s3
+    .getObject(params)
+    .promise()
+    .catch((e) => console.error(e));
+  return data ? data.Body : data;
+};
+
 export const deleteImage = (_id: string) => {
   const params = {
     Bucket: defaultBucket,
@@ -42,6 +54,32 @@ export const updateImage = async (key: string, body: Body) => {
     .promise()
     .catch((e) => console.log("image update failed.", e));
   if (data) console.log(`Image with key=${key} updated.`);
+};
+
+export const uploadImage = async (Key: string, file: Express.Multer.File, Bucket = defaultBucket) => {
+  const Body = await compressImage(file.buffer);
+  if (!Body) throw new Error("Something went wrong compressing images.");
+  const uploadParams = {
+    Bucket,
+    Body,
+    Key,
+  };
+  await s3.upload(uploadParams).promise();
+};
+
+export const uploadImages = async (
+  imageIds: string[] | string,
+  files: Express.Multer.File[],
+  Bucket = defaultBucket
+) => {
+  const res: { msg?: string; error?: string } = await Promise.all(
+    Array.from(files.entries()).map(async ([_, file], i) => {
+      await uploadImage(Array.isArray(imageIds) ? imageIds[i] : imageIds, file, Bucket);
+    })
+  )
+    .then((_) => ({ msg: "Upload(s) successful!" }))
+    .catch((_) => ({ error: "Something went wrong during upload(s)." }));
+  return res;
 };
 
 export const compressAllImages = (): void => {
