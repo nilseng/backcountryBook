@@ -1,4 +1,4 @@
-import React from "react";
+import { Dispatch, SetStateAction } from "react";
 import Container from "react-bootstrap/Container";
 import { ITrip } from "../models/Trip";
 import { useScroll } from "../utils/useScroll";
@@ -8,9 +8,9 @@ import TripCard from "./TripCard";
 
 interface IProps {
   trips?: ITrip[];
-  setOffset: Function;
-  setTrip: Function;
-  setShowModal: Function;
+  setOffset: Dispatch<SetStateAction<number>>;
+  setTrip: Dispatch<SetStateAction<ITrip>>;
+  setShowModal: Dispatch<SetStateAction<boolean>>;
   loading?: boolean;
 }
 
@@ -24,12 +24,7 @@ const Feed = ({ trips, setOffset, setTrip, setShowModal, loading }: IProps) => {
       <>
         {trips &&
           trips.map((trip: any) => (
-            <TripCard
-              key={trip._id}
-              trip={trip}
-              setTripToEdit={setTrip}
-              setShowModal={setShowModal}
-            />
+            <TripCard key={trip._id} trip={trip} setTripToEdit={setTrip} setShowModal={setShowModal} />
           ))}
         {loading && <Loading backgroundColor="transparent" />}
       </>
